@@ -7,7 +7,10 @@ import "./Example.less"
 
 class Example extends Component {
     render() {
-        return <DatePicker></DatePicker>
+        return <div>
+                <div>Hello world!</div>
+                click <DatePicker type="time" max='2016-5-30'></DatePicker> to select
+            </div>
     }
 }
 
