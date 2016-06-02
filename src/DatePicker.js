@@ -15,7 +15,7 @@ function padStart(num) {
 
 const localeConfigs = {
     en: {
-        order: ['month', 'date', 'year', 'ampm', 'hour', 'minute'],
+        order: ['month', 'date', 'year', 'hour', 'minute', 'ampm'],
         year: year => year,
         month: month => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][month],
         date: date => date,
@@ -65,34 +65,46 @@ class DatePicker extends Component {
         }
     }
 
-    updateState(selectedValues) {
-        let newState = Object.assign({}, this.state)
-        for (let i = 0, l = selectedValues.length; i < l; i++) {
-            newState[this._keysInOrder[i]] = selectedValues[i].key
-        }
-        this.setState(newState)
-    }
-
     get date() {
-        return new Date(`${this.state.year}-${this.state.month}-${this.state.date} ${this.state.hour}:${this.state.minute}`)
-    }
-
-    onSelect(selectedValues) {
-        this.updateState(selectedValues)
-        if (this.props.onSelect) {
-            this.props.onSelect(this.date)
+        // TODO: this.state is not accurate date, here use UltraSelect's state
+        if (this.refs.select) {
+            let selectedValues = this.refs.select.selectedValues
+            let tmp = {}
+            for (let i = 0, l = selectedValues.length; i < l; i++) {
+                tmp[this._keysInOrder[i]] = selectedValues[i].key
+            }
+            let str = tmp.year || (new Date()).getFullYear()
+            if (tmp.month) {
+                str += `-${tmp.month}`
+                if (tmp.date) {
+                    str += `-${tmp.date}`
+                }
+            }
+            if (typeof tmp.hour === 'number') {
+                str += ` ${tmp.hour}:${typeof tmp.minute === 'number' ? tmp.minute : '00'}`
+            }
+            return new Date(str)
         }
     }
 
-    onDidSelect(selectedValues) {
-        this.updateState(selectedValues)
+    onSelect(index, selectedValue) {
+        this.setState({
+            ...this.state,
+            [this._keysInOrder[index]]: selectedValue.key
+        })
+        if (this.props.onSelect) {
+            this.props.onSelect(this.refs.select.selectedValues)
+        }
+    }
+
+    onDidSelect(index, selectedValue) {
         if (this.props.onDidSelect) {
-            this.props.onDidSelect(this.date)
+            this.props.onDidSelect(this.refs.select.selectedValues)
         }
     }
 
     calYear(min, max) {
-        let ret = {list:[], defaultIndex:0}
+        let ret = {list:[], defaultIndex:-1}
         for (let i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++, index++) {
             ret.list.push({
                 key: i,
@@ -102,11 +114,12 @@ class DatePicker extends Component {
                 ret.defaultIndex = index
             }
         }
+        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
         return ret
     }
 
     calMonth(min, max) {
-        let ret = {list:[], defaultIndex:0}
+        let ret = {list:[], defaultIndex:-1}
         for (let i = 1, index = 0; i <= 12; i++, index++) {
             let d = new Date(`${this.state.year}-${i}-1`)
             if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
@@ -120,11 +133,12 @@ class DatePicker extends Component {
             }
             else break
         }
+        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
         return ret
     }
 
     calDate(min, max) {
-        let ret = {list:[], defaultIndex:0}
+        let ret = {list:[], defaultIndex:-1}
         let days = daysInMonth(this.state.year, this.state.month)
         for (let i = 1, index = 0; i <= days; i++, index++) {
             let d = new Date(`${this.state.year}-${this.state.month}-${i}`)
@@ -139,6 +153,7 @@ class DatePicker extends Component {
             }
             else break
         }
+        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
         return ret
     }
 
@@ -159,7 +174,7 @@ class DatePicker extends Component {
     }
 
     calHour(min, max) {
-        let ret = {list:[], defaultIndex:0}
+        let ret = {list:[], defaultIndex:-1}
         let start, end
         if (this.props.use24hours) {
             start = 0
@@ -183,11 +198,12 @@ class DatePicker extends Component {
             }
             else break
         }
+        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
         return ret
     }
 
     calMinute(min, max) {
-        let ret = {list:[], defaultIndex:0}
+        let ret = {list:[], defaultIndex:-1}
         for (let i = 0; i < 60; i++) {
             let d = new Date(`${this.state.year}-${this.state.month}-${this.state.date} ${this.state.hour}:${i}`)
             if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
@@ -201,6 +217,7 @@ class DatePicker extends Component {
             }
             else break
         }
+        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
         return ret
     }
 
@@ -270,7 +287,7 @@ class DatePicker extends Component {
             }
         }
 
-        return <UltraSelect columns={finalColumns} onSelect={this.onSelect} onDidSelect={this.onDidSelect}
+        return <UltraSelect ref="select" columns={finalColumns} onSelect={this.onSelect} onDidSelect={this.onDidSelect}
                     confirmButton={locale.confirmButton}></UltraSelect>
     }
 }
