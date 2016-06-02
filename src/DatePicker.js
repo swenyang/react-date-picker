@@ -14,7 +14,7 @@ function padStart(num) {
 }
 
 const localeConfigs = {
-    en: {
+    'en': {
         order: ['month', 'date', 'year', 'hour', 'minute', 'ampm'],
         year: year => year,
         month: month => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][month],
@@ -24,7 +24,23 @@ const localeConfigs = {
         hour: (hour, use24hours) => use24hours ? padStart(hour) : (hour === 0 ? '12' : padStart(hour)),
         minute: minute => padStart(minute),
         confirmButton: 'CONFIRM',
-    }
+    },
+    'zh-cn': {
+        order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],
+        year: year => `${year}年`,
+        month: month => `${month+1}月`,
+        date: date => `${date}日`,
+        am: '上午',
+        pm: '下午',
+        hour: (hour, use24hours) => use24hours ? padStart(hour) : (hour === 0 ? '12' : padStart(hour)),
+        minute: minute => padStart(minute),
+        confirmButton: '确定',
+    },
+}
+
+// to keep this library size small, expose a function to expand localeConfigs on demand
+export const addLocaleConfig = (key, config) => {
+    localeConfigs[key] = config
 }
 
 class DatePicker extends Component {
@@ -33,10 +49,12 @@ class DatePicker extends Component {
         min: PropTypes.string,
         defaultDate: PropTypes.string,
         type: PropTypes.oneOf(['date', 'datetime', 'time', 'month']),
-        locale: PropTypes.oneOf(['en', 'zh-cn', 'zh-tw']),
+        locale: PropTypes.oneOf(['en', 'zh-cn']),
         use24hours: PropTypes.bool,
         onSelect: PropTypes.func,
         onDidSelect: PropTypes.func,
+        getTitle: PropTypes.func,
+        getStaticText: PropTypes.func,
     }
 
     static defaultProps = {
@@ -78,6 +96,9 @@ class DatePicker extends Component {
     calColumnsAndKeys(defaults) {
         const {type, use24hours, min, max, locale} = this.props
         // 1. select keys
+        // WARNING: keys in selectedKeys should be arranged in order to ensure DatePicker work properly
+        // year -> month -> date -> ampm -> hour -> minute
+        // that is, from bigger scope to smaller scope
         let selectedKeys
         switch (type) {
             case 'date':
@@ -177,6 +198,10 @@ class DatePicker extends Component {
         }
     }
 
+    inDateRange(d, min, max) {
+        return d.getTime() >= min.getTime() && d.getTime() <= max.getTime()
+    }
+
     calYear(min, max, defaults) {
         let ret = {list:[], defaultIndex:-1}
         for (let i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++, index++) {
@@ -188,15 +213,17 @@ class DatePicker extends Component {
                 ret.defaultIndex = index
             }
         }
-        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
+        if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1
+        if (ret.list.length > 0) defaults.year = ret.list[ret.defaultIndex].key
         return ret
     }
 
     calMonth(min, max, defaults) {
         let ret = {list:[], defaultIndex:-1}
-        for (let i = 1, index = 0; i <= 12; i++, index++) {
-            let d = new Date(`${defaults.year}-${i}-1`)
-            if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
+        for (let i = 1, index = 0; i <= 12; i++) {
+            let dMin = new Date(`${defaults.year}-${i}-1 00:00`)
+            let dMax = new Date(`${defaults.year}-${i}-${daysInMonth(defaults.year, i)} 23:59`)
+            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].month(i - 1)
@@ -204,18 +231,21 @@ class DatePicker extends Component {
                 if (i === defaults.month) {
                     ret.defaultIndex = index
                 }
+                index++
             }
         }
-        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
+        if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1
+        if (ret.list.length > 0) defaults.month = ret.list[ret.defaultIndex].key
         return ret
     }
 
     calDate(min, max, defaults) {
         let ret = {list:[], defaultIndex:-1}
         let days = daysInMonth(defaults.year, defaults.month)
-        for (let i = 1, index = 0; i <= days; i++, index++) {
-            let d = new Date(`${defaults.year}-${defaults.month}-${i}`)
-            if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
+        for (let i = 1, index = 0; i <= days; i++) {
+            let dMin = new Date(`${defaults.year}-${defaults.month}-${i} 00:00`)
+            let dMax = new Date(`${defaults.year}-${defaults.month}-${i} 23:59`)
+            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].date(i)
@@ -223,9 +253,11 @@ class DatePicker extends Component {
                 if (i === defaults.date) {
                     ret.defaultIndex = index
                 }
+                index++
             }
         }
-        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
+        if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1
+        if (ret.list.length > 0) defaults.date = ret.list[ret.defaultIndex].key
         return ret
     }
 
@@ -233,8 +265,9 @@ class DatePicker extends Component {
         let ret = {list:[], defaultIndex:-1}
         let hour = defaults.hour % 12
         let index = 0
-        let d = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hour}:${defaults.minute}`)
-        if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
+        let dMin = new Date(`${defaults.year}-${defaults.month}-${defaults.date} 00:00`)
+        let dMax = new Date(`${defaults.year}-${defaults.month}-${defaults.date} 11:59`)
+        if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
             ret.list.push({
                 key: 'am',
                 value: localeConfigs[this.props.locale].am
@@ -244,8 +277,9 @@ class DatePicker extends Component {
             }
             index++
         }
-        d = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hour+12}:${defaults.minute}`)
-        if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
+        dMin = new Date(`${defaults.year}-${defaults.month}-${defaults.date} 12:00`)
+        dMax = new Date(`${defaults.year}-${defaults.month}-${defaults.date} 23:59`)
+        if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
             ret.list.push({
                 key: 'pm',
                 value: localeConfigs[this.props.locale].pm
@@ -254,6 +288,8 @@ class DatePicker extends Component {
                 ret.defaultIndex = index
             }
         }
+        if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1
+        if (ret.list.length > 0) defaults.ampm = ret.list[ret.defaultIndex].key
         return ret
     }
 
@@ -268,10 +304,15 @@ class DatePicker extends Component {
             start = 0
             end = 11
         }
-        for (let i = start, index = 0; i <= end; i++, index++) {
-            let hours = (!this.props.use24hours && defaults.ampm === 'pm') ? i+12 : i
-            let d = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hours}:00`)
-            if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
+        for (let i = start, index = 0; i <= end; i++) {
+            let hours = i
+            if (!this.props.use24hours) {
+                hours %= 12
+                if (defaults.ampm === 'pm') hours += 12
+            }
+            let dMin = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hours}:00`)
+            let dMax = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hours}:59`)
+            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].hour(i, this.props.use24hours)
@@ -279,27 +320,36 @@ class DatePicker extends Component {
                 if (i === defaults.hour) {
                     ret.defaultIndex = index
                 }
+                index++
             }
         }
-        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
+        if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1
+        if (ret.list.length > 0) defaults.hour = ret.list[ret.defaultIndex].key
         return ret
     }
 
     calMinute(min, max, defaults) {
         let ret = {list:[], defaultIndex:-1}
-        for (let i = 0; i < 60; i++) {
-            let d = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${defaults.hour}:${i}`)
+        for (let i = 0, index = 0; i < 60; i++) {
+            let hours = defaults.hour
+            if (!this.props.use24hours) {
+                hours %= 12
+                if (defaults.ampm === 'pm') hours += 12
+            }
+            let d = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hours}:${i}`)
             if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].minute(i)
                 })
                 if (i === defaults.minute) {
-                    ret.defaultIndex = i
+                    ret.defaultIndex = index
                 }
+                index++
             }
         }
-        ret.defaultIndex = (ret.defaultIndex === -1) ? ret.list.length - 1 : ret.defaultIndex
+        if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1
+        if (ret.list.length > 0) defaults.minute = ret.list[ret.defaultIndex].key
         return ret
     }
 
@@ -308,8 +358,13 @@ class DatePicker extends Component {
         for (let i = 0, l = columns.length; i < l; i++) {
             copyColumns.push({list: [...columns[i].list], defaultIndex: columns[i].defaultIndex})
         }
-        return <UltraSelect columns={copyColumns} onSelect={this.onSelect} onDidSelect={this.onDidSelect}
-                    confirmButton={localeConfigs[this.props.locale].confirmButton}></UltraSelect>
+        return <UltraSelect columns={copyColumns}
+                            onSelect={this.onSelect}
+                            onDidSelect={this.onDidSelect}
+                            confirmButton={localeConfigs[this.props.locale].confirmButton}
+                            getTitle={this.props.getTitle}
+                            getStaticText={this.props.getStaticText}
+        ></UltraSelect>
     }
 }
 
