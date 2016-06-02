@@ -14,7 +14,7 @@ class Example extends Component {
     render() {
         return <div>
                 <div>Hello world!</div>
-                click <DatePicker ref='dp' type="date"
+                click <DatePicker ref='dp' type="month"
                                   onDidSelect={this.onDidSelect.bind(this)}></DatePicker> to select
             </div>
     }
