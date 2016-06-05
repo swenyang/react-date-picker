@@ -31,9 +31,9 @@ If you are looking for a React Date Picker working on mobile platforms, this one
 
 	Both two time system are supported.
 
-- **Flexible Locale Configs**
+- **Flexible Locale Configurations**
 
-	Exposed a very convinient API for custom locale config. Using this API, you can not only arrange order, but also decide how each year/month/date/ampm/hour/minute element is displayed.
+	Exposed a very convinient API `addLocaleConfig` for custom locale config. Using this API, you can not only arrange order, but also decide how each year/month/date/ampm/hour/minute element is displayed.
 
 - **Setting Default Date**
 
@@ -72,7 +72,7 @@ class SomeComponent extends Component {
 }
 ```
 
-Note that you should pack `iscroll-probe` instead of `iscroll` in your production code, cause this component use `iscroll-probe` to calculate scroll offset and selected indecies. In your [Webpack][3] config:
+Note that you should pack `iscroll-probe` instead of `iscroll` in your production code, cause this component use `iscroll-probe` to calculate scroll offset and selected indecies. For example, in your [Webpack][3] config:
 
 ```js
 module.exports = {
@@ -103,17 +103,17 @@ module.exports = {
     </thead>
     <tbody>
         <tr>
-            <td>`max`</td>
+            <td>`min`</td>
             <td>`'1970-01-01'`</td>
             <td>String</td>
-            <td>Maximum date you can select, should be a string which `new Date(max)` can parse to a `Date` Object. If you don't specify time, a `'00:00'` will be appended.</td>
+            <td>Minimum date you can select, should be a string which `new Date(min)` can parse to a `Date` Object. If you don't specify time, a `'00:00'` will be appended.</td>
             <td>`'2016-8-2 1:29'`</td>
         </tr>
         <tr>
-            <td>`min`</td>
+            <td>`max`</td>
             <td>`'2038-01-19 03:14'`</td>
             <td>String</td>
-            <td>Minimum date you can select, should be a string which `new Date(max)` can parse to a `Date` Object. If you don't specify time, a `'23:59'` will be appended.</td>
+            <td>Maximum date you can select, should be a string which `new Date(max)` can parse to a `Date` Object. If you don't specify time, a `'23:59'` will be appended.</td>
             <td>`'2016-8-2 1:29'`</td>
         </tr>
         <tr>
@@ -134,14 +134,14 @@ module.exports = {
             <td>`locale`</td>
             <td>`'en'`</td>
             <td>One string of `en` or `zh-cn`, or locale name added by `addLocaleConfig`</td>
-            <td>Tells which date locale config to use.</td>
+            <td>Tells which date locale configuration to use.</td>
             <td>`'zh-cn'`</td>
         </tr>
         <tr>
             <td>`use24hours`</td>
             <td>`false`</td>
             <td>Boolean</td>
-            <td>Whether to use 24-hour system.</td>
+            <td>Whether to use 24-hour system or not.</td>
             <td>`true`</td>
         </tr>
         <tr>
@@ -162,25 +162,26 @@ module.exports = {
             <td>`getTitle`</td>
             <td></td>
             <td>Function</td>
-            <td>A function to set the bottom title, will be called with an array of selected values</td>
+            <td>A function to set the bottom title, will be called with an array of selected values.</td>
             <td>`(selectedValues) => <div>Please select</div>`</td>
         </tr>
         <tr>
             <td>`getStaticText`</td>
             <td></td>
             <td>Function</td>
-            <td>A function to set the text in collapse state, will be called with an array of selected values</td>
+            <td>A function to set the text in collapse state, will be called with an array of selected values.</td>
             <td>`(selectedValues) => <div>Please select</div>`</td>
         </tr>
     </tbody>
-</table>
+ </table>
 
 # Functions
 
 - `addLocaleConfig(name, config)`
 
-	Add a locale config to the Date Picker, so you can specify locale other than `en` and `zh-cn`. The config keys includes:
-	<table>
+	Adding a locale configuration to the Date Picker, so you can specify `locale` other than `en` and `zh-cn`. The config keys includes:
+
+     <table>
         <thead>
             <tr>
                 <td><b>Key</b></td>
@@ -245,24 +246,24 @@ module.exports = {
                 <td>`'OK'`</td>
             </tr>
         </tbody>
-    </table>
+     </table>
 
-	For example, adding a `zh-tw` locale config would be like below:
+	For example, adding a `ja` locale config would be like below:
 
 	```js
-	import DatePicker,{addLocaleConfig, padStartWith0} from 'react-ultra-date-picker'
+	import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from 'react-ultra-date-picker'
 
-	addLocaleConfig('zh-tw', {
-	    order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],
-	    year: year => `${year}年`,
-	    month: month => `${month+1}月`,
-	    date: date => `${date}日`,
-	    am: '上午',
-	    pm: '下午',
-	    hour: (hour, use24hours) => use24hours ? padStart(hour) : (hour === 0 ? '12' : padStartWith0(hour)),
-	    minute: minute => padStartWith0(minute),
-	    confirmButton: '好',
-	})
+    addLocaleConfig('ja', {
+        order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],
+        year: year => `${year}年`,
+        month: month => `${month+1}月`,
+        date: date => `${date}日`,
+        am: '朝',
+        pm: '午後',
+        hour: translateHour,
+        minute: minute => padStartWith0(minute),
+        confirmButton: '決定します',
+    })
 	```
 
 - `padStartWith0(num)`
