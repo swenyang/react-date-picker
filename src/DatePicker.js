@@ -2,17 +2,14 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import UltraSelect from 'react-ultra-select'
 
-export function daysInMonth(year, month) {
-    return new Date(year, month, 0).getDate()
-}
+export const daysInMonth = (year, month) => new Date(year, month, 0).getDate()
 
-export function padStartWith0(num) {
-    return num >= 10 ? num.toString() : `0${num}`
-}
+export const padStartWith0 = (num) => num >= 10 ? num.toString() : `0${num}`
 
-export function isPm(date) {
-    return date.getHours() >= 12
-}
+export const isPm = (date) => date.getHours() >= 12
+
+export const translateHour =  (hour, use24hours) =>
+    use24hours ? padStartWith0(hour) : ((hour % 12) === 0 ? '12' : padStartWith0(hour % 12))
 
 const localeConfigs = {
     'en': {
@@ -22,7 +19,7 @@ const localeConfigs = {
         date: date => date,
         am: 'AM',
         pm: 'PM',
-        hour: (hour, use24hours) => use24hours ? padStartWith0(hour) : (hour === 0 ? '12' : padStartWith0(hour)),
+        hour: translateHour,
         minute: minute => padStartWith0(minute),
         confirmButton: 'CONFIRM',
     },
@@ -33,7 +30,7 @@ const localeConfigs = {
         date: date => `${date}日`,
         am: '上午',
         pm: '下午',
-        hour: (hour, use24hours) => use24hours ? padStartWith0(hour) : (hour === 0 ? '12' : padStartWith0(hour)),
+        hour: translateHour,
         minute: minute => padStartWith0(minute),
         confirmButton: '确定',
     },
@@ -68,6 +65,7 @@ class DatePicker extends Component {
 
     constructor(props) {
         super(props)
+        this.getTitle = this.getTitle.bind(this)
         this.onSelect = this.onSelect.bind(this)
         this.onDidSelect = this.onDidSelect.bind(this)
 
@@ -87,6 +85,39 @@ class DatePicker extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        let hasChanged = false
+        for (let key of Object.keys(nextProps)) {
+            if (nextProps[key] !== this.props[key]) {
+                hasChanged = true
+                break
+            }
+        }
+        if (hasChanged) {
+            let defaults = this.getDefaults(nextProps)
+            this.setState(this.calColumnsAndKeys(defaults, nextProps))
+        }
+    }
+
+    getPrefix(i) {
+        if (i === 0) return ''
+        switch (this.state.keys[i]) {
+            case 'hour':
+            case 'ampm': return ' '
+            case 'minute': return ':'
+            default: return '-'
+        }
+    }
+
+    getTitle(selectedValues) {
+        return <span>{
+            selectedValues.map((e, i) =>
+                <span key={i}>
+                    {this.getPrefix(i)}{e.value}
+                </span>)
+        }</span>
+    }
+
     getValueFromState(key, defaultIndex) {
         let state = this.state
         let columnIndex = state.keys.findIndex(e => e === key)
@@ -94,8 +125,9 @@ class DatePicker extends Component {
         return state.columns[columnIndex].list[defaultIndex].key
     }
 
-    calColumnsAndKeys(defaults) {
-        const {type, use24hours, min, max, locale} = this.props
+    calColumnsAndKeys(defaults, props) {
+        props = props || this.props
+        const {type, use24hours, min, max, locale} = props
         // 1. select keys
         // WARNING: keys in selectedKeys should be arranged in order to ensure DatePicker work properly
         // year -> month -> date -> ampm -> hour -> minute
@@ -174,9 +206,7 @@ class DatePicker extends Component {
             let key = this.state.keys[i]
             defaults[key] = this.getValueFromState(key, null)
         }
-        let hour = defaults.hour % 12
-        if (defaults.ampm === 'pm') hour += 12
-        return new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hour}:${defaults.minute}`)
+        return new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${defaults.hour}:${defaults.minute}`)
     }
 
     onSelect(index, selectedValue) {
@@ -264,7 +294,6 @@ class DatePicker extends Component {
 
     calAMPM(min, max, defaults) {
         let ret = {list:[], defaultIndex:-1}
-        let hour = defaults.hour % 12
         let index = 0
         let dMin = new Date(`${defaults.year}-${defaults.month}-${defaults.date} 00:00`)
         let dMax = new Date(`${defaults.year}-${defaults.month}-${defaults.date} 11:59`)
@@ -307,18 +336,17 @@ class DatePicker extends Component {
         }
         for (let i = start, index = 0; i <= end; i++) {
             let hours = i
-            if (!this.props.use24hours) {
-                hours %= 12
-                if (defaults.ampm === 'pm') hours += 12
+            if (!this.props.use24hours && defaults.ampm === 'pm') {
+                hours += 12
             }
             let dMin = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hours}:00`)
             let dMax = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hours}:59`)
             if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
                 ret.list.push({
-                    key: i,
-                    value: localeConfigs[this.props.locale].hour(i, this.props.use24hours)
+                    key: hours,
+                    value: localeConfigs[this.props.locale].hour(hours, this.props.use24hours)
                 })
-                if (i === defaults.hour) {
+                if (hours === defaults.hour) {
                     ret.defaultIndex = index
                 }
                 index++
@@ -332,12 +360,7 @@ class DatePicker extends Component {
     calMinute(min, max, defaults) {
         let ret = {list:[], defaultIndex:-1}
         for (let i = 0, index = 0; i < 60; i++) {
-            let hours = defaults.hour
-            if (!this.props.use24hours) {
-                hours %= 12
-                if (defaults.ampm === 'pm') hours += 12
-            }
-            let d = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${hours}:${i}`)
+            let d = new Date(`${defaults.year}-${defaults.month}-${defaults.date} ${defaults.hour}:${i}`)
             if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
                 ret.list.push({
                     key: i,
@@ -363,8 +386,8 @@ class DatePicker extends Component {
                             onSelect={this.onSelect}
                             onDidSelect={this.onDidSelect}
                             confirmButton={localeConfigs[this.props.locale].confirmButton}
-                            getTitle={this.props.getTitle}
-                            getStaticText={this.props.getStaticText}
+                            getTitle={this.props.getTitle || this.getTitle}
+                            getStaticText={this.props.getStaticText || this.getTitle}
         ></UltraSelect>
     }
 }

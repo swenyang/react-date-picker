@@ -277,6 +277,10 @@ module.exports = {
 
 	Whether a given date is in p.m. or not. Returns a Boolean.
 
+- `translateHour(hour, use24hours)`
+
+    Translate an hour number to correct number according to the `use24hour` parameter.
+
 - `DatePicker.date`
 
     Get the current selected date, a javascript `Date` Object will be returned. You can call `getFullYear()`, `getMonth()`, `getDate()`, `getHour()` or `getMinute()` depending on your needs.
@@ -296,6 +300,8 @@ module.exports = {
 	Clone this repo, and run `npm run examples`. Then navigate to <http://localhost:8080> to see examples.
 
 # TODO
+
+- **Bugs on switching `use24hours` props; bugs on switching `locale` props**
 
 - Implementing more features in the web APIs of the INPUT DATE elemnent
 
