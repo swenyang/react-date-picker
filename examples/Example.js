@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 
 import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from '../src/DatePicker'
-//import DatePicker,{addLocaleConfig, padStartWith0} from '../dist/react-ultra-date-picker'
+//import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from '../dist/react-ultra-date-picker'
 
 import "./Example.less"
 
