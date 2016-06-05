@@ -1,16 +1,17 @@
 import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
+import UltraSelect from 'react-ultra-select'
 
-import UltraSelect from './UltraSelect'
-
-import './DatePicker.less'
-
-function daysInMonth(year, month) {
+export function daysInMonth(year, month) {
     return new Date(year, month, 0).getDate()
 }
 
-function padStart(num) {
+export function padStartWith0(num) {
     return num >= 10 ? num.toString() : `0${num}`
+}
+
+export function isPm(date) {
+    return date.getHours() >= 12
 }
 
 const localeConfigs = {
@@ -21,8 +22,8 @@ const localeConfigs = {
         date: date => date,
         am: 'AM',
         pm: 'PM',
-        hour: (hour, use24hours) => use24hours ? padStart(hour) : (hour === 0 ? '12' : padStart(hour)),
-        minute: minute => padStart(minute),
+        hour: (hour, use24hours) => use24hours ? padStartWith0(hour) : (hour === 0 ? '12' : padStartWith0(hour)),
+        minute: minute => padStartWith0(minute),
         confirmButton: 'CONFIRM',
     },
     'zh-cn': {
@@ -32,15 +33,15 @@ const localeConfigs = {
         date: date => `${date}日`,
         am: '上午',
         pm: '下午',
-        hour: (hour, use24hours) => use24hours ? padStart(hour) : (hour === 0 ? '12' : padStart(hour)),
-        minute: minute => padStart(minute),
+        hour: (hour, use24hours) => use24hours ? padStartWith0(hour) : (hour === 0 ? '12' : padStartWith0(hour)),
+        minute: minute => padStartWith0(minute),
         confirmButton: '确定',
     },
 }
 
 // to keep this library size small, expose a function to expand localeConfigs on demand
-export const addLocaleConfig = (key, config) => {
-    localeConfigs[key] = config
+export const addLocaleConfig = (name, config) => {
+    localeConfigs[name] = config
 }
 
 class DatePicker extends Component {
@@ -49,7 +50,7 @@ class DatePicker extends Component {
         min: PropTypes.string,
         defaultDate: PropTypes.string,
         type: PropTypes.oneOf(['date', 'datetime', 'time', 'month']),
-        locale: PropTypes.oneOf(['en', 'zh-cn']),
+        locale: PropTypes.string,
         use24hours: PropTypes.bool,
         onSelect: PropTypes.func,
         onDidSelect: PropTypes.func,
@@ -58,8 +59,8 @@ class DatePicker extends Component {
     }
 
     static defaultProps = {
-        min: '1950-01-01',
-        max: '2049-12-31',
+        min: '1970-01-01',
+        max: '2038-01-19 03:14',
         type: 'date',
         locale: 'en',
         use24hours: false,
@@ -79,8 +80,8 @@ class DatePicker extends Component {
         return {
             year: defaultDate.getFullYear(),
             month: defaultDate.getMonth() + 1,
-            date: props.defaultDate ? defaultDate.getDate() : 1,
-            ampm: defaultDate.getHours() >= 12 ? 'pm' : 'am',
+            date: defaultDate.getDate(),
+            ampm: isPm(defaultDate) ? 'pm' : 'am',
             hour: defaultDate.getHours(),
             minute: defaultDate.getMinutes(),
         }
@@ -124,7 +125,7 @@ class DatePicker extends Component {
                 selectedKeys = ['year', 'month']
                 break
         }
-        // 2. calculate range
+        // 2. calculate range for each
         let columnsDict = {}
         let reg = /\d{1,2}:\d{1,2}$/
         let minDate = new Date(`${min} ${min.match(reg) ? '' : '00:00'}`)

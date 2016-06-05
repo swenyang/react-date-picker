@@ -6,7 +6,10 @@ module.exports = {
     },
     externals: {
         "react": "react",
-        "react-dom" : "react-dom"
+        "react-dom" : "react-dom",
+        "iscroll-react" : "iscroll-react",
+        "iscroll/build/iscroll-probe" : "iscroll/build/iscroll-probe",
+        "react-ultra-select" : "react-ultra-select",
     },
     output: {
         path: path.join(__dirname, "dist"),
