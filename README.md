@@ -105,23 +105,23 @@ module.exports = {
         <tr>
             <td>`min`</td>
             <td>`'1970-01-01'`</td>
-            <td>String</td>
-            <td>Minimum date you can select, should be a string which `new Date(min)` can parse to a `Date` Object. If you don't specify time, a `'00:00'` will be appended.</td>
-            <td>`'2016-8-2 1:29'`</td>
+            <td>Date String in [`Date.parse()`][7] format</td>
+            <td>Minimum date you can select, should be a string which `new Date(min)` can parse. If you don't specify time, a `'00:00'` will be appended.</td>
+            <td>`'19 Sep 2011 14:14'`</td>
         </tr>
         <tr>
             <td>`max`</td>
             <td>`'2038-01-19 03:14'`</td>
-            <td>String</td>
-            <td>Maximum date you can select, should be a string which `new Date(max)` can parse to a `Date` Object. If you don't specify time, a `'23:59'` will be appended.</td>
-            <td>`'2016-8-2 1:29'`</td>
+            <td>Date String in [`Date.parse()`][7] format</td>
+            <td>Maximum date you can select, should be a string which `new Date(max)` can parse. If you don't specify time, a `'23:59'` will be appended.</td>
+            <td>`'19 Sep 2017 03:14'`</td>
         </tr>
         <tr>
             <td>`defaultDate`</td>
             <td>Current date on constructor</td>
-            <td>String</td>
+            <td>Date String in [`Date.parse()`][7] format</td>
             <td>Default selected date, same as above two.</td>
-            <td>`'2015-2-20'`</td>
+            <td>`'Mon Jun 06 2016'`</td>
         </tr>
         <tr>
             <td>`type`</td>
@@ -174,6 +174,8 @@ module.exports = {
         </tr>
     </tbody>
  </table>
+
+[`Date.parse()`][7] string format better follows [RFC2822 Section 3.3][6] or [ISO-8601][5]:
 
 # Functions
 
@@ -310,3 +312,6 @@ module.exports = {
 [2]: https://github.com/swenyang/react-date-picker
 [3]: https://webpack.github.io
 [4]: http://stackoverflow.com/questions/315760/what-is-the-best-way-to-determine-the-number-of-days-in-a-month-with-javascript
+[5]: https://www.w3.org/TR/NOTE-datetime
+[6]: http://tools.ietf.org/html/rfc2822#section-3.3
+[7]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse

@@ -30,10 +30,10 @@ class Example extends Component {
         this.onSelectLocale = this.onSelectLocale.bind(this)
 
         this.state = {
-            type: 'date',
-            min: '1970-01-01 1:00',
-            max: '2038-01-19 03:14',
-            default: '2016-06-05 13:19',
+            type: 'datetime',
+            min: ('01 Jun 2015'),
+            max: ('19 Sep 2017 03:14'),
+            default: (new Date()).toDateString(),
             use24: false,
             locale: 'en',
         }
@@ -119,15 +119,15 @@ class Example extends Component {
                             <tbody>
                                 <tr>
                                     <td>Minimum:</td>
-                                    <td><input type="input" value={this.state.min} onChange={this.onSetMin}/><br/></td>
+                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} value={this.state.min} onChange={this.onSetMin}/><br/></td>
                                 </tr>
                                 <tr>
                                     <td>Maximum:</td>
-                                    <td><input type="input" value={this.state.max} onChange={this.onSetMax}/><br/></td>
+                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} value={this.state.max} onChange={this.onSetMax}/><br/></td>
                                 </tr>
                                 <tr>
                                     <td>Default:</td>
-                                    <td><input type="input" value={this.state.default} onChange={this.onSetDefault}/></td>
+                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} value={this.state.default} onChange={this.onSetDefault}/></td>
                                 </tr>
                             </tbody>
                         </table>

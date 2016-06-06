@@ -154,6 +154,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    localeConfigs[name] = config;
 	};
 
+	var dateStringProp = function dateStringProp(props, propName, componentName) {
+	    if (!props[propName]) return;
+	    if (Number.isNaN(new Date(props[propName]))) {
+	        return new Error(componentName + ': ' + propName + ' invalid date string provided.');
+	    }
+	};
+
 	var DatePicker = function (_Component) {
 	    _inherits(DatePicker, _Component);
 
@@ -177,7 +184,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var defaultDate = props.defaultDate ? new Date(props.defaultDate) : new Date();
 	            return {
 	                year: defaultDate.getFullYear(),
-	                month: defaultDate.getMonth() + 1,
+	                month: defaultDate.getMonth(),
 	                date: defaultDate.getDate(),
 	                ampm: isPm(defaultDate) ? 'pm' : 'am',
 	                hour: defaultDate.getHours(),
@@ -303,9 +310,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            // 2. calculate range for each
 	            var columnsDict = {};
-	            var reg = /\d{1,2}:\d{1,2}$/;
-	            var minDate = new Date(min + ' ' + (min.match(reg) ? '' : '00:00'));
-	            var maxDate = new Date(max + ' ' + (max.match(reg) ? '' : '23:59'));
+	            var minDate = new Date('' + min);
+	            var maxDate = new Date('' + max);
 	            for (var i = 0, l = selectedKeys.length; i < l; i++) {
 	                switch (selectedKeys[i]) {
 	                    case 'year':
@@ -344,6 +350,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	        }
 	    }, {
+	        key: 'newDate',
+	        value: function newDate(year, month, date, hour, minute) {
+	            return new Date(year, month, date, hour, minute);
+	        }
+	    }, {
 	        key: 'onSelect',
 	        value: function onSelect(index, selectedValue) {
 	            var defaults = this.getDefaults();
@@ -376,13 +387,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'calYear',
 	        value: function calYear(min, max, defaults) {
 	            var ret = { list: [], defaultIndex: -1 };
-	            for (var i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++, index++) {
-	                ret.list.push({
-	                    key: i,
-	                    value: localeConfigs[this.props.locale].year(i)
-	                });
-	                if (i === defaults.year) {
-	                    ret.defaultIndex = index;
+	            for (var i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++) {
+	                var dMin = this.newDate(i, 1, 1, 0, 0);
+	                var dMax = this.newDate(i, 12, 31, 23, 59);
+	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+	                    ret.list.push({
+	                        key: i,
+	                        value: localeConfigs[this.props.locale].year(i)
+	                    });
+	                    if (i === defaults.year) {
+	                        ret.defaultIndex = index;
+	                    }
+	                    index++;
 	                }
 	            }
 	            if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1;
@@ -393,13 +409,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'calMonth',
 	        value: function calMonth(min, max, defaults) {
 	            var ret = { list: [], defaultIndex: -1 };
-	            for (var i = 1, index = 0; i <= 12; i++) {
-	                var dMin = new Date(defaults.year + '-' + i + '-1 00:00');
-	                var dMax = new Date(defaults.year + '-' + i + '-' + daysInMonth(defaults.year, i) + ' 23:59');
+	            for (var i = 0, index = 0; i < 12; i++) {
+	                var dMin = this.newDate(defaults.year, i, 1, 0, 0);
+	                var dMax = this.newDate(defaults.year, i, daysInMonth(defaults.year, i + 1), 23, 59);
 	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
-	                        value: localeConfigs[this.props.locale].month(i - 1)
+	                        value: localeConfigs[this.props.locale].month(i)
 	                    });
 	                    if (i === defaults.month) {
 	                        ret.defaultIndex = index;
@@ -417,8 +433,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var ret = { list: [], defaultIndex: -1 };
 	            var days = daysInMonth(defaults.year, defaults.month);
 	            for (var i = 1, index = 0; i <= days; i++) {
-	                var dMin = new Date(defaults.year + '-' + defaults.month + '-' + i + ' 00:00');
-	                var dMax = new Date(defaults.year + '-' + defaults.month + '-' + i + ' 23:59');
+	                var dMin = this.newDate(defaults.year, defaults.month, i, 0, 0);
+	                var dMax = this.newDate(defaults.year, defaults.month, i, 23, 59);
 	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
@@ -439,8 +455,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function calAMPM(min, max, defaults) {
 	            var ret = { list: [], defaultIndex: -1 };
 	            var index = 0;
-	            var dMin = new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' 00:00');
-	            var dMax = new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' 11:59');
+	            var dMin = this.newDate(defaults.year, defaults.month, defaults.date, 0, 0);
+	            var dMax = this.newDate(defaults.year, defaults.month, defaults.date, 11, 59);
 	            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
 	                ret.list.push({
 	                    key: 'am',
@@ -451,8 +467,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	                index++;
 	            }
-	            dMin = new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' 12:00');
-	            dMax = new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' 23:59');
+	            dMin = this.newDate(defaults.year, defaults.month, defaults.date, 12, 0);
+	            dMax = this.newDate(defaults.year, defaults.month, defaults.date, 23, 59);
 	            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
 	                ret.list.push({
 	                    key: 'pm',
@@ -484,8 +500,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (!this.props.use24hours && defaults.ampm === 'pm') {
 	                    hours += 12;
 	                }
-	                var dMin = new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' ' + hours + ':00');
-	                var dMax = new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' ' + hours + ':59');
+	                var dMin = this.newDate(defaults.year, defaults.month, defaults.date, hours, 0);
+	                var dMax = this.newDate(defaults.year, defaults.month, defaults.date, hours, 59);
 	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
 	                    ret.list.push({
 	                        key: hours,
@@ -506,7 +522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function calMinute(min, max, defaults) {
 	            var ret = { list: [], defaultIndex: -1 };
 	            for (var i = 0, index = 0; i < 60; i++) {
-	                var d = new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' ' + defaults.hour + ':' + i);
+	                var d = this.newDate(defaults.year, defaults.month, defaults.date, defaults.hour, i);
 	                if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
 	                    ret.list.push({
 	                        key: i,
@@ -546,7 +562,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var key = this.state.keys[i];
 	                defaults[key] = this.getValueFromState(key, null);
 	            }
-	            return new Date(defaults.year + '-' + defaults.month + '-' + defaults.date + ' ' + defaults.hour + ':' + defaults.minute);
+	            return this.newDate(defaults.year, defaults.month, defaults.date, defaults.hour, defaults.minute);
 	        }
 	    }]);
 
@@ -554,9 +570,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}(_react.Component);
 
 	DatePicker.propTypes = {
-	    max: _react.PropTypes.string,
-	    min: _react.PropTypes.string,
-	    defaultDate: _react.PropTypes.string,
+	    max: dateStringProp,
+	    min: dateStringProp,
+	    defaultDate: dateStringProp,
 	    type: _react.PropTypes.oneOf(['date', 'datetime', 'time', 'month']),
 	    locale: _react.PropTypes.string,
 	    use24hours: _react.PropTypes.bool,
@@ -566,8 +582,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    getStaticText: _react.PropTypes.func
 	};
 	DatePicker.defaultProps = {
-	    min: '1970-01-01',
-	    max: '2038-01-19 03:14',
+	    min: '01 Jan 1970',
+	    max: '19 Jan 2038 03:14',
 	    type: 'date',
 	    locale: 'en',
 	    use24hours: false
