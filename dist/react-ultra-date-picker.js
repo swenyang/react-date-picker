@@ -551,7 +551,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                onDidSelect: this.onDidSelect,
 	                confirmButton: localeConfigs[this.props.locale].confirmButton,
 	                getTitle: this.props.getTitle || this.getTitle,
-	                getStaticText: this.props.getStaticText || this.getTitle
+	                getStaticText: this.props.getStaticText || this.getTitle,
+	                rowsVisible: this.props.rowsVisible,
+	                rowHeight: this.props.rowHeight,
+	                rowHeightUnit: this.props.rowHeightUnit,
+	                backdrop: this.props.backdrop
 	            });
 	        }
 	    }, {
@@ -576,10 +580,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    type: _react.PropTypes.oneOf(['date', 'datetime', 'time', 'month']),
 	    locale: _react.PropTypes.string,
 	    use24hours: _react.PropTypes.bool,
+
 	    onSelect: _react.PropTypes.func,
 	    onDidSelect: _react.PropTypes.func,
+	    // props inherited from UltraSelect
 	    getTitle: _react.PropTypes.func,
-	    getStaticText: _react.PropTypes.func
+	    getStaticText: _react.PropTypes.func,
+	    rowsVisible: _react.PropTypes.number,
+	    rowHeight: _react.PropTypes.number,
+	    rowHeightUnit: _react.PropTypes.string,
+	    backdrop: _react.PropTypes.bool
 	};
 	DatePicker.defaultProps = {
 	    min: '01 Jan 1970',

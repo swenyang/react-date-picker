@@ -56,10 +56,16 @@ class DatePicker extends Component {
         type: PropTypes.oneOf(['date', 'datetime', 'time', 'month']),
         locale: PropTypes.string,
         use24hours: PropTypes.bool,
+
         onSelect: PropTypes.func,
         onDidSelect: PropTypes.func,
+        // props inherited from UltraSelect
         getTitle: PropTypes.func,
         getStaticText: PropTypes.func,
+        rowsVisible: PropTypes.number,
+        rowHeight: PropTypes.number,
+        rowHeightUnit: PropTypes.string,
+        backdrop: PropTypes.bool,
     }
 
     static defaultProps = {
@@ -403,6 +409,10 @@ class DatePicker extends Component {
                             confirmButton={localeConfigs[this.props.locale].confirmButton}
                             getTitle={this.props.getTitle || this.getTitle}
                             getStaticText={this.props.getStaticText || this.getTitle}
+                            rowsVisible={this.props.rowsVisible}
+                            rowHeight={this.props.rowHeight}
+                            rowHeightUnit={this.props.rowHeightUnit}
+                            backdrop={this.props.backdrop}
         ></UltraSelect>
     }
 }

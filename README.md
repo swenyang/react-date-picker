@@ -3,6 +3,8 @@ An iOS like, comprehensive date picker component for React.
 
 If you are looking for a React Date Picker working on mobile platforms, this one would be a good choice. After browsing a lot of React Date Picker projects on GitHub, I found that most of them are PC-oriented, so I decided to write one for mobile platforms. This is how [React Ultra Select][1] and [React Ultra Date Picker][2] come.
 
+Current Release Version: 1.0.2
+
 # Features
 
 - **Supporting 4 Types of Date Picker**
