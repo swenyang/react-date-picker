@@ -3,8 +3,6 @@ An iOS like, comprehensive date picker component for React.
 
 If you are looking for a React Date Picker working on mobile platforms, this one would be a good choice. After browsing a lot of React Date Picker projects on GitHub, I found that most of them are PC-oriented, so I decided to write one for mobile platforms. This is how [React Ultra Select][1] and [React Ultra Date Picker][2] come.
 
-Current Release Version: 1.0.2
-
 # Features
 
 - **Supporting 4 Types of Date Picker**
@@ -174,6 +172,34 @@ module.exports = {
             <td>A function to set the text in collapse state, will be called with an array of selected values.</td>
             <td>`(selectedValues) => <div>Please select</div>`</td>
         </tr>
+        <tr>
+            <td>`rowsVisible`</td>
+            <td></td>
+            <td>Odd Number</td>
+            <td>Refer to [React Ultra Select][1]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>`rowHeight`</td>
+            <td></td>
+            <td>Number</td>
+            <td>Refer to [React Ultra Select][1]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>`rowHeightUnit`</td>
+            <td></td>
+            <td>String</td>
+            <td>Refer to [React Ultra Select][1]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>`backdrop`</td>
+            <td></td>
+            <td>Boolean</td>
+            <td>Refer to [React Ultra Select][1]</td>
+            <td></td>
+        </tr>
     </tbody>
  </table>
 
@@ -309,6 +335,16 @@ module.exports = {
 - **Bugs on switching `use24hours` props; bugs on switching `locale` props**
 
 - Implementing more features in the web APIs of the INPUT DATE elemnent
+
+# Change Logs
+
+- Version: 1.0.3
+
+    Fix date range calculation bug.
+
+- Version: 1.0.2
+
+    Pass `rowsVisible`, `rowHeight`, `rowHeightUnit`, `backdrop` to [React Ultra Select][1].
 
 [1]: https://github.com/swenyang/react-ultra-select
 [2]: https://github.com/swenyang/react-date-picker

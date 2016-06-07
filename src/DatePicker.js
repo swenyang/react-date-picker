@@ -245,8 +245,8 @@ class DatePicker extends Component {
         }
     }
 
-    inDateRange(d, min, max) {
-        return d.getTime() >= min.getTime() && d.getTime() <= max.getTime()
+    intersects(min1, max1, min2, max2) {
+        return !(max1.getTime() < min2.getTime() || min1.getTime() > max2.getTime())
     }
 
     calYear(min, max, defaults) {
@@ -254,7 +254,7 @@ class DatePicker extends Component {
         for (let i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++) {
             let dMin = this.newDate(i, 1, 1, 0, 0)
             let dMax = this.newDate(i, 12, 31, 23, 59)
-            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+            if (this.intersects(dMin, dMax, min, max)) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].year(i)
@@ -275,7 +275,7 @@ class DatePicker extends Component {
         for (let i = 0, index = 0; i < 12; i++) {
             let dMin = this.newDate(defaults.year, i, 1, 0, 0)
             let dMax = this.newDate(defaults.year, i, daysInMonth(defaults.year, i + 1), 23, 59)
-            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+            if (this.intersects(dMin, dMax, min, max)) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].month(i)
@@ -297,7 +297,7 @@ class DatePicker extends Component {
         for (let i = 1, index = 0; i <= days; i++) {
             let dMin = this.newDate(defaults.year, defaults.month, i, 0, 0)
             let dMax = this.newDate(defaults.year, defaults.month, i, 23, 59)
-            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+            if (this.intersects(dMin, dMax, min, max)) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].date(i)
@@ -318,7 +318,7 @@ class DatePicker extends Component {
         let index = 0
         let dMin = this.newDate(defaults.year, defaults.month, defaults.date, 0, 0)
         let dMax = this.newDate(defaults.year, defaults.month, defaults.date, 11, 59)
-        if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+        if (this.intersects(dMin, dMax, min, max)) {
             ret.list.push({
                 key: 'am',
                 value: localeConfigs[this.props.locale].am
@@ -330,7 +330,7 @@ class DatePicker extends Component {
         }
         dMin = this.newDate(defaults.year, defaults.month, defaults.date, 12, 0)
         dMax = this.newDate(defaults.year, defaults.month, defaults.date, 23, 59)
-        if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+        if (this.intersects(dMin, dMax, min, max)) {
             ret.list.push({
                 key: 'pm',
                 value: localeConfigs[this.props.locale].pm
@@ -362,7 +362,7 @@ class DatePicker extends Component {
             }
             let dMin = this.newDate(defaults.year, defaults.month, defaults.date, hours, 0)
             let dMax = this.newDate(defaults.year, defaults.month, defaults.date, hours, 59)
-            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+            if (this.intersects(dMin, dMax, min, max)) {
                 ret.list.push({
                     key: hours,
                     value: localeConfigs[this.props.locale].hour(hours, this.props.use24hours)
@@ -382,7 +382,7 @@ class DatePicker extends Component {
         let ret = {list:[], defaultIndex:-1}
         for (let i = 0, index = 0; i < 60; i++) {
             let d = this.newDate(defaults.year, defaults.month, defaults.date, defaults.hour, i)
-            if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
+            if (this.intersects(d, d, min, max)) {
                 ret.list.push({
                     key: i,
                     value: localeConfigs[this.props.locale].minute(i)

@@ -379,9 +379,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }, {
-	        key: 'inDateRange',
-	        value: function inDateRange(d, min, max) {
-	            return d.getTime() >= min.getTime() && d.getTime() <= max.getTime();
+	        key: 'intersects',
+	        value: function intersects(min1, max1, min2, max2) {
+	            return !(max1.getTime() < min2.getTime() || min1.getTime() > max2.getTime());
 	        }
 	    }, {
 	        key: 'calYear',
@@ -390,7 +390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            for (var i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++) {
 	                var dMin = this.newDate(i, 1, 1, 0, 0);
 	                var dMax = this.newDate(i, 12, 31, 23, 59);
-	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
 	                        value: localeConfigs[this.props.locale].year(i)
@@ -412,7 +412,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            for (var i = 0, index = 0; i < 12; i++) {
 	                var dMin = this.newDate(defaults.year, i, 1, 0, 0);
 	                var dMax = this.newDate(defaults.year, i, daysInMonth(defaults.year, i + 1), 23, 59);
-	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
 	                        value: localeConfigs[this.props.locale].month(i)
@@ -435,7 +435,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            for (var i = 1, index = 0; i <= days; i++) {
 	                var dMin = this.newDate(defaults.year, defaults.month, i, 0, 0);
 	                var dMax = this.newDate(defaults.year, defaults.month, i, 23, 59);
-	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
 	                        value: localeConfigs[this.props.locale].date(i)
@@ -457,7 +457,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var index = 0;
 	            var dMin = this.newDate(defaults.year, defaults.month, defaults.date, 0, 0);
 	            var dMax = this.newDate(defaults.year, defaults.month, defaults.date, 11, 59);
-	            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+	            if (this.intersects(dMin, dMax, min, max)) {
 	                ret.list.push({
 	                    key: 'am',
 	                    value: localeConfigs[this.props.locale].am
@@ -469,7 +469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            dMin = this.newDate(defaults.year, defaults.month, defaults.date, 12, 0);
 	            dMax = this.newDate(defaults.year, defaults.month, defaults.date, 23, 59);
-	            if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+	            if (this.intersects(dMin, dMax, min, max)) {
 	                ret.list.push({
 	                    key: 'pm',
 	                    value: localeConfigs[this.props.locale].pm
@@ -502,7 +502,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	                var dMin = this.newDate(defaults.year, defaults.month, defaults.date, hours, 0);
 	                var dMax = this.newDate(defaults.year, defaults.month, defaults.date, hours, 59);
-	                if (this.inDateRange(dMin, min, max) || this.inDateRange(dMax, min, max)) {
+	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: hours,
 	                        value: localeConfigs[this.props.locale].hour(hours, this.props.use24hours)
@@ -523,7 +523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var ret = { list: [], defaultIndex: -1 };
 	            for (var i = 0, index = 0; i < 60; i++) {
 	                var d = this.newDate(defaults.year, defaults.month, defaults.date, defaults.hour, i);
-	                if (d.getTime() >= min.getTime() && d.getTime() <= max.getTime()) {
+	                if (this.intersects(d, d, min, max)) {
 	                    ret.list.push({
 	                        key: i,
 	                        value: localeConfigs[this.props.locale].minute(i)

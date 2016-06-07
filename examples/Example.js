@@ -31,8 +31,8 @@ class Example extends Component {
 
         this.state = {
             type: 'datetime',
-            min: ('01 Jun 2015'),
-            max: ('19 Sep 2017 03:14'),
+            min: ('19 Sep 2017 03:10'),
+            max: ('19 Sep 2017 13:14'),
             default: (new Date()).toDateString(),
             use24: false,
             locale: 'en',
