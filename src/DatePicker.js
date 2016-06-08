@@ -66,6 +66,7 @@ class DatePicker extends Component {
         rowHeight: PropTypes.number,
         rowHeightUnit: PropTypes.string,
         backdrop: PropTypes.bool,
+        disabled: PropTypes.bool,
     }
 
     static defaultProps = {
@@ -413,6 +414,7 @@ class DatePicker extends Component {
                             rowHeight={this.props.rowHeight}
                             rowHeightUnit={this.props.rowHeightUnit}
                             backdrop={this.props.backdrop}
+                            disabled={this.props.disabled}
         ></UltraSelect>
     }
 }

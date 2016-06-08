@@ -555,7 +555,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                rowsVisible: this.props.rowsVisible,
 	                rowHeight: this.props.rowHeight,
 	                rowHeightUnit: this.props.rowHeightUnit,
-	                backdrop: this.props.backdrop
+	                backdrop: this.props.backdrop,
+	                disabled: this.props.disabled
 	            });
 	        }
 	    }, {
@@ -589,7 +590,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    rowsVisible: _react.PropTypes.number,
 	    rowHeight: _react.PropTypes.number,
 	    rowHeightUnit: _react.PropTypes.string,
-	    backdrop: _react.PropTypes.bool
+	    backdrop: _react.PropTypes.bool,
+	    disabled: _react.PropTypes.bool
 	};
 	DatePicker.defaultProps = {
 	    min: '01 Jan 1970',

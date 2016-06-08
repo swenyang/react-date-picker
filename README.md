@@ -3,6 +3,8 @@ An iOS like, comprehensive date picker component for React.
 
 If you are looking for a React Date Picker working on mobile platforms, this one would be a good choice. After browsing a lot of React Date Picker projects on GitHub, I found that most of them are PC-oriented, so I decided to write one for mobile platforms. This is how [React Ultra Select][1] and [React Ultra Date Picker][2] come.
 
+**Still testing, will publish 2.0.0 when stable.**
+
 # Features
 
 - **Supporting 4 Types of Date Picker**
@@ -200,6 +202,13 @@ module.exports = {
             <td>Refer to [React Ultra Select][1]</td>
             <td></td>
         </tr>
+        <tr>
+            <td>`disabled`</td>
+            <td></td>
+            <td>Boolean</td>
+            <td>Refer to [React Ultra Select][1]</td>
+            <td></td>
+        </tr>
     </tbody>
  </table>
 
@@ -335,16 +344,6 @@ module.exports = {
 - **Bugs on switching `use24hours` props; bugs on switching `locale` props**
 
 - Implementing more features in the web APIs of the INPUT DATE elemnent
-
-# Change Logs
-
-- Version: 1.0.3
-
-    Fix date range calculation bug.
-
-- Version: 1.0.2
-
-    Pass `rowsVisible`, `rowHeight`, `rowHeightUnit`, `backdrop` to [React Ultra Select][1].
 
 [1]: https://github.com/swenyang/react-ultra-select
 [2]: https://github.com/swenyang/react-date-picker

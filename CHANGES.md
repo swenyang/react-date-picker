@@ -1,0 +1,16 @@
+# Change Logs
+
+## Version 1.0.4
+
+- 2016-06-08
+- Pass `disabled` prop to [React Ultra Select][1].
+
+## Version 1.0.3
+
+- 2016-06-08
+- Fix date range calculation bug.
+
+## Version 1.0.2
+
+- 2016-06-07
+- Pass `rowsVisible`, `rowHeight`, `rowHeightUnit`, `backdrop` props to [React Ultra Select][1].
