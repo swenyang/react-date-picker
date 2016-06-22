@@ -92,6 +92,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	// http://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
 	var daysInMonth = exports.daysInMonth = function daysInMonth(year, month) {
 	    return new Date(year, month, 0).getDate();
 	};
@@ -431,7 +432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'calDate',
 	        value: function calDate(min, max, defaults) {
 	            var ret = { list: [], defaultIndex: -1 };
-	            var days = daysInMonth(defaults.year, defaults.month);
+	            var days = daysInMonth(defaults.year, defaults.month + 1);
 	            for (var i = 1, index = 0; i <= days; i++) {
 	                var dMin = this.newDate(defaults.year, defaults.month, i, 0, 0);
 	                var dMax = this.newDate(defaults.year, defaults.month, i, 23, 59);

@@ -1,5 +1,10 @@
 # Change Logs
 
+## Version 1.0.5
+
+- 2016-06-08
+- fix `calMonth()` returning wrong dates in a month.
+
 ## Version 1.0.4
 
 - 2016-06-08

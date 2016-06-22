@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import UltraSelect from 'react-ultra-select'
 
+// http://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
 export const daysInMonth = (year, month) => new Date(year, month, 0).getDate()
 
 export const padStartWith0 = (num) => num >= 10 ? num.toString() : `0${num}`
@@ -294,7 +295,7 @@ class DatePicker extends Component {
 
     calDate(min, max, defaults) {
         let ret = {list:[], defaultIndex:-1}
-        let days = daysInMonth(defaults.year, defaults.month)
+        let days = daysInMonth(defaults.year, defaults.month + 1)
         for (let i = 1, index = 0; i <= days; i++) {
             let dMin = this.newDate(defaults.year, defaults.month, i, 0, 0)
             let dMax = this.newDate(defaults.year, defaults.month, i, 23, 59)
