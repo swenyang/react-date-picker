@@ -1,6 +1,6 @@
 {
   "name": "react-ultra-date-picker",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "An iOS like, comprehensive date picker component for React",
   "main": "dist/react-ultra-date-picker.js",
   "scripts": {
@@ -42,7 +42,7 @@
     "less-loader": "^2.2.3",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
-    "react-ultra-select": "^1.0.8",
+    "react-ultra-select": "^1.0.9",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"

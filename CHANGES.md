@@ -1,5 +1,10 @@
 # Change Logs
 
+## Version 1.0.6
+
+- 2016-06-24
+- pass `onOpen` and `onClose` props
+
 ## Version 1.0.5
 
 - 2016-06-08

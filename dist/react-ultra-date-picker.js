@@ -550,6 +550,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return _react2.default.createElement(_reactUltraSelect2.default, { columns: copyColumns,
 	                onSelect: this.onSelect,
 	                onDidSelect: this.onDidSelect,
+	                onOpen: this.props.onOpen,
+	                onClose: this.props.onClose,
 	                confirmButton: localeConfigs[this.props.locale].confirmButton,
 	                getTitle: this.props.getTitle || this.getTitle,
 	                getStaticText: this.props.getStaticText || this.getTitle,
@@ -592,7 +594,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    rowHeight: _react.PropTypes.number,
 	    rowHeightUnit: _react.PropTypes.string,
 	    backdrop: _react.PropTypes.bool,
-	    disabled: _react.PropTypes.bool
+	    disabled: _react.PropTypes.bool,
+	    onOpen: _react.PropTypes.func,
+	    onClose: _react.PropTypes.func
 	};
 	DatePicker.defaultProps = {
 	    min: '01 Jan 1970',

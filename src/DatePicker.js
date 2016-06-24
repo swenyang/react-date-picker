@@ -68,6 +68,8 @@ class DatePicker extends Component {
         rowHeightUnit: PropTypes.string,
         backdrop: PropTypes.bool,
         disabled: PropTypes.bool,
+        onOpen: PropTypes.func,
+        onClose: PropTypes.func,
     }
 
     static defaultProps = {
@@ -408,6 +410,8 @@ class DatePicker extends Component {
         return <UltraSelect columns={copyColumns}
                             onSelect={this.onSelect}
                             onDidSelect={this.onDidSelect}
+                            onOpen={this.props.onOpen}
+                            onClose={this.props.onClose}
                             confirmButton={localeConfigs[this.props.locale].confirmButton}
                             getTitle={this.props.getTitle || this.getTitle}
                             getStaticText={this.props.getStaticText || this.getTitle}

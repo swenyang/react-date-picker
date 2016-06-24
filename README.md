@@ -161,6 +161,20 @@ module.exports = {
             <td>`(date) => console.log(date)`</td>
         </tr>
         <tr>
+            <td>`onOpen`</td>
+            <td></td>
+            <td>Function</td>
+            <td></td>
+            <td>Refer to [React Ultra Select][1]</td>
+        </tr>
+        <tr>
+            <td>`onClose`</td>
+            <td></td>
+            <td>Function</td>
+            <td></td>
+            <td>Refer to [React Ultra Select][1]</td>
+        </tr>
+        <tr>
             <td>`getTitle`</td>
             <td></td>
             <td>Function</td>
