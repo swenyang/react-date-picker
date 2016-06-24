@@ -559,7 +559,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                rowHeight: this.props.rowHeight,
 	                rowHeightUnit: this.props.rowHeightUnit,
 	                backdrop: this.props.backdrop,
-	                disabled: this.props.disabled
+	                disabled: this.props.disabled,
+	                isOpen: this.props.isOpen,
+	                useTouchTap: this.props.useTouchTap
 	            });
 	        }
 	    }, {
@@ -595,8 +597,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    rowHeightUnit: _react.PropTypes.string,
 	    backdrop: _react.PropTypes.bool,
 	    disabled: _react.PropTypes.bool,
+	    useTouchTap: _react.PropTypes.bool,
 	    onOpen: _react.PropTypes.func,
-	    onClose: _react.PropTypes.func
+	    onClose: _react.PropTypes.func,
+	    isOpen: _react.PropTypes.bool
 	};
 	DatePicker.defaultProps = {
 	    min: '01 Jan 1970',

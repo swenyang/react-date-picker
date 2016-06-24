@@ -161,20 +161,6 @@ module.exports = {
             <td>`(date) => console.log(date)`</td>
         </tr>
         <tr>
-            <td>`onOpen`</td>
-            <td></td>
-            <td>Function</td>
-            <td></td>
-            <td>Refer to [React Ultra Select][1]</td>
-        </tr>
-        <tr>
-            <td>`onClose`</td>
-            <td></td>
-            <td>Function</td>
-            <td></td>
-            <td>Refer to [React Ultra Select][1]</td>
-        </tr>
-        <tr>
             <td>`getTitle`</td>
             <td></td>
             <td>Function</td>
@@ -218,6 +204,34 @@ module.exports = {
         </tr>
         <tr>
             <td>`disabled`</td>
+            <td></td>
+            <td>Boolean</td>
+            <td>Refer to [React Ultra Select][1]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>`useTouchTap`</td>
+            <td></td>
+            <td>Boolean</td>
+            <td>Refer to [React Ultra Select][1]</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>`onOpen`</td>
+            <td></td>
+            <td>Function</td>
+            <td></td>
+            <td>Refer to [React Ultra Select][1]</td>
+        </tr>
+        <tr>
+            <td>`onClose`</td>
+            <td></td>
+            <td>Function</td>
+            <td></td>
+            <td>Refer to [React Ultra Select][1]</td>
+        </tr>
+        <tr>
+            <td>`isOpen`</td>
             <td></td>
             <td>Boolean</td>
             <td>Refer to [React Ultra Select][1]</td>

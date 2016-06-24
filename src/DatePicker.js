@@ -68,8 +68,10 @@ class DatePicker extends Component {
         rowHeightUnit: PropTypes.string,
         backdrop: PropTypes.bool,
         disabled: PropTypes.bool,
+        useTouchTap: PropTypes.bool,
         onOpen: PropTypes.func,
         onClose: PropTypes.func,
+        isOpen: PropTypes.bool,
     }
 
     static defaultProps = {
@@ -420,6 +422,8 @@ class DatePicker extends Component {
                             rowHeightUnit={this.props.rowHeightUnit}
                             backdrop={this.props.backdrop}
                             disabled={this.props.disabled}
+                            isOpen={this.props.isOpen}
+                            useTouchTap={this.props.useTouchTap}
         ></UltraSelect>
     }
 }

@@ -1,5 +1,10 @@
 # Change Logs
 
+## Version 1.0.7
+
+- 2016-06-24
+- pass `isOpen` and `useTouchTap` props
+
 ## Version 1.0.6
 
 - 2016-06-24
