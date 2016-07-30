@@ -1,19 +1,20 @@
 var path = require("path")
+var webpack = require('webpack')
 
-module.exports = {
+var isProd = process.env.NODE_ENV === 'production'
+
+var config = {
     entry: {
         "react-ultra-date-picker": ["./src/DatePicker.js"],
     },
     externals: {
         "react": "react",
         "react-dom" : "react-dom",
-        "iscroll-react" : "iscroll-react",
-        "iscroll/build/iscroll-probe" : "iscroll/build/iscroll-probe",
         "react-ultra-select" : "react-ultra-select",
     },
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "[name].js",
+        filename: isProd ? "[name].min.js" : "[name].js",
         library: "react-ultra-date-picker",
         libraryTarget: "umd"
     },
@@ -32,3 +33,14 @@ module.exports = {
         ]
     }
 }
+
+if (isProd) {
+    config.plugins.push(
+        new webpack.optimize.UglifyJsPlugin({
+            minimize: true,
+            comments: false
+        })
+    )
+}
+
+module.exports = config

@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom'
 
 import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from '../src/DatePicker'
 //import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from '../dist/react-ultra-date-picker'
+import reactPerf from 'react-addons-perf'
 
 import "./Example.less"
 
-addLocaleConfig('ja', {
+window.reactPerf = reactPerf
+
+const jaConfig = {
     order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],
     year: year => `${year}年`,
     month: month => `${month+1}月`,
@@ -16,7 +19,26 @@ addLocaleConfig('ja', {
     hour: translateHour,
     minute: minute => padStartWith0(minute),
     confirmButton: '決定します',
-})
+    cancelButton: 'キャンセル',
+    dateLabel: (outOfRange, date, type, use24) => {
+        if (outOfRange) {
+            return '日付を範囲で選択されていません'
+        }
+        switch (type) {
+            case 'time':
+                return `${use24 ? '' : (date.getHours() < 12 ? jaConfig.am : jaConfig.pm)}${jaConfig.hour(date.getHours(), use24)}:${jaConfig.minute(date.getMinutes())}`
+            case 'month':
+                return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}`
+            case 'datetime':
+                return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}${jaConfig.date(date.getDate())} ${use24 ? '' : (date.getHours() < 12 ? jaConfig.am : jaConfig.pm)}${jaConfig.hour(date.getHours(), use24)}:${jaConfig.minute(date.getMinutes())}`
+            case 'date':
+                return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}${jaConfig.date(date.getDate())}`
+            default:
+                break
+        }
+    }
+}
+addLocaleConfig('ja', jaConfig)
 
 class Example extends Component {
     constructor(props) {
@@ -30,13 +52,15 @@ class Example extends Component {
         this.onSelectLocale = this.onSelectLocale.bind(this)
 
         this.state = {
-            type: 'datetime',
-            min: ('19 Sep 2017 03:10'),
+            type: 'date',
+            min: ('30 Sep 2016 03:10'),
             max: ('19 Sep 2017 13:14'),
-            default: (new Date()).toDateString(),
+            //default: (new Date()).toDateString(),
             use24: false,
             locale: 'en',
         }
+
+        window.example = this
     }
 
     onSelectType(e) {
@@ -48,7 +72,7 @@ class Example extends Component {
 
     onSetMin(e) {
         let d = new Date(e.target.value)
-        if (!Number.isNaN(d.getDate())) {
+        if (!Number.isNaN(d.getDate()) || (this.state.type === 'time' && e.target.value.match(/\d{2}:\d{2}/) && e.target.value.length === 5)) {
             this.setState({
                 ...this.state,
                 min: e.target.value
@@ -58,7 +82,7 @@ class Example extends Component {
 
     onSetMax(e) {
         let d = new Date(e.target.value)
-        if (!Number.isNaN(d.getDate())) {
+        if (!Number.isNaN(d.getDate()) || (this.state.type === 'time' && e.target.value.match(/\d{2}:\d{2}/) && e.target.value.length === 5)) {
             this.setState({
                 ...this.state,
                 max: e.target.value
@@ -68,7 +92,7 @@ class Example extends Component {
 
     onSetDefault(e) {
         let d = new Date(e.target.value)
-        if (!Number.isNaN(d.getDate())) {
+        if (!Number.isNaN(d.getDate()) || e.target.value === '' || (this.state.type === 'time' && e.target.value.match(/\d{2}:\d{2}/) && e.target.value.length === 5)) {
             this.setState({
                 ...this.state,
                 default: e.target.value
@@ -99,10 +123,6 @@ class Example extends Component {
         }</span>
     }
 
-    getTitle(selectedValues) {
-        return <b>SCROLL TO SELECT A MONTH</b>
-    }
-
     render() {
         return <div id="example">
                 <h2 id="header">React Ultra Date Picker Examples</h2>
@@ -119,43 +139,46 @@ class Example extends Component {
                             <tbody>
                                 <tr>
                                     <td>Minimum:</td>
-                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} value={this.state.min} onChange={this.onSetMin}/><br/></td>
+                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} defaultValue={this.state.min} onChange={this.onSetMin}/><br/></td>
                                 </tr>
                                 <tr>
                                     <td>Maximum:</td>
-                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} value={this.state.max} onChange={this.onSetMax}/><br/></td>
+                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} defaultValue={this.state.max} onChange={this.onSetMax}/><br/></td>
                                 </tr>
                                 <tr>
                                     <td>Default:</td>
-                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} value={this.state.default} onChange={this.onSetDefault}/></td>
+                                    <td style={{width:"100%"}}><input type="input" style={{width:"100%"}} defaultValue={this.state.default} onChange={this.onSetDefault}/></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
                     <div className="option-elem"><b>Use 24-hour system: </b><br/>
-                        <small>(switching this prop has bugs now, but works fine on static or after scrolling)</small><br/>
                         <input type="radio" name="use24" value="yes" onChange={this.onSelect24} checked={this.state.use24}/>Yes
                         <input type="radio" name="use24" value="no" onChange={this.onSelect24} checked={!this.state.use24}/>No
                     </div>
 
                     <div className="option-elem"><b>Language locale: </b><br/>
-                        <small>(switching this prop has bugs now, but works fine on static or after scrolling)</small><br/>
                         <input type="radio" name="locale" value="en" onChange={this.onSelectLocale} checked={this.state.locale === 'en'}/>en
                         <input type="radio" name="locale" value="zh-cn" onChange={this.onSelectLocale} checked={this.state.locale === 'zh-cn'}/>zh-cn
                     </div>
 
                     <b>Result:</b><br/>
-                    <DatePicker type={this.state.type} locale="en" min={this.state.min} use24hours={this.state.use24}
+                    <DatePicker ref="picker" type={this.state.type} min={this.state.min} use24hours={this.state.use24}
                                 max={this.state.max} defaultDate={this.state.default} locale={this.state.locale}></DatePicker>
                 </div>
 
                 <div className="selection">
-                    <b>Cutomizing a locale:</b>
+                    <b>Cutomizing a locale (Japan):</b><br/>
+                    <DatePicker type={this.state.type} locale="ja" min={this.state.min} use24hours={this.state.use24}
+                                max={this.state.max} defaultDate={this.state.default}></DatePicker>
+                    <br/><br/>
+                    <b>Source Code:</b>
                     <pre style={{whiteSpace:"pre-wrap"}}><code>
                         {`import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from 'react-ultra-date-picker'
 
-addLocaleConfig('ja', {
+
+const jaConfig = {
     order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],
     year: year => \`\${year}年\`,
     month: month => \`\${month+1}月\`,
@@ -165,15 +188,32 @@ addLocaleConfig('ja', {
     hour: translateHour,
     minute: minute => padStartWith0(minute),
     confirmButton: '決定します',
-})`}
+    cancelButton: 'キャンセル',
+    dateLabel: (outOfRange, date, type, use24) => {
+        if (outOfRange) {
+            return '日付を範囲で選択されていません'
+        }
+        switch (type) {
+            case 'time':
+                return \`\${use24 ? '' : (date.getHours() < 12 ? jaConfig.am : jaConfig.pm)}\${jaConfig.hour(date.getHours(), use24)}:\${jaConfig.minute(date.getMinutes())}\`
+            case 'month':
+                return \`\${jaConfig.year(date.getFullYear())}\${jaConfig.month(date.getMonth())}\`
+            case 'datetime':
+                return \`\${jaConfig.year(date.getFullYear())}\${jaConfig.month(date.getMonth())}\${jaConfig.date(date.getDate())} \${use24 ? '' : (date.getHours() < 12 ? jaConfig.am : jaConfig.pm)}\${jaConfig.hour(date.getHours(), use24)}:\${jaConfig.minute(date.getMinutes())}\`
+            case 'date':
+                return \`\${jaConfig.year(date.getFullYear())}\${jaConfig.month(date.getMonth())}\${jaConfig.date(date.getDate())}\`
+            default:
+                break
+        }
+    }
+}
+addLocaleConfig('ja', jaConfig)`}
                     </code></pre>
-                    <b>Result:</b><br/>
-                    <DatePicker locale="ja" type="time"></DatePicker>
                 </div>
 
                 <div className="selection">
                     <b>Cutomizing title or text: </b><br/>
-                    <DatePicker type="month" getTitle={this.getTitle}
+                    <DatePicker type="month" title={<b>SCROLL TO SELECT A MONTH</b>}
                                                           getStaticText={this.getStaticText}></DatePicker>
                 </div>
             </div>

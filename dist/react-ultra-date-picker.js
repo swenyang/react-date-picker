@@ -68,6 +68,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.addLocaleConfig = exports.translateHour = exports.isPm = exports.padStartWith0 = exports.daysInMonth = undefined;
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(2);
@@ -82,15 +84,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _reactUltraSelect2 = _interopRequireDefault(_reactUltraSelect);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _deepEqual = __webpack_require__(5);
 
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	var _deepEqual2 = _interopRequireDefault(_deepEqual);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	//import UltraSelect from './UltraSelect'
+
 
 	// http://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
 	var daysInMonth = exports.daysInMonth = function daysInMonth(year, month) {
@@ -109,57 +115,119 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return use24hours ? padStartWith0(hour) : hour % 12 === 0 ? '12' : padStartWith0(hour % 12);
 	};
 
-	var localeConfigs = {
-	    'en': {
-	        order: ['month', 'date', 'year', 'hour', 'minute', 'ampm'],
-	        year: function year(_year) {
-	            return _year;
-	        },
-	        month: function month(_month) {
-	            return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][_month];
-	        },
-	        date: function date(_date) {
-	            return _date;
-	        },
-	        am: 'AM',
-	        pm: 'PM',
-	        hour: translateHour,
-	        minute: function minute(_minute) {
-	            return padStartWith0(_minute);
-	        },
-	        confirmButton: 'CONFIRM'
+	var enConfig = {
+	    order: ['month', 'date', 'year', 'hour', 'minute', 'ampm'],
+	    year: function year(_year) {
+	        return _year;
 	    },
-	    'zh-cn': {
-	        order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],
-	        year: function year(_year2) {
-	            return _year2 + '年';
-	        },
-	        month: function month(_month2) {
-	            return _month2 + 1 + '月';
-	        },
-	        date: function date(_date2) {
-	            return _date2 + '日';
-	        },
-	        am: '上午',
-	        pm: '下午',
-	        hour: translateHour,
-	        minute: function minute(_minute2) {
-	            return padStartWith0(_minute2);
-	        },
-	        confirmButton: '确定'
+	    month: function month(_month) {
+	        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][_month];
+	    },
+	    date: function date(_date) {
+	        return padStartWith0(_date);
+	    },
+	    am: 'AM',
+	    pm: 'PM',
+	    hour: translateHour,
+	    minute: function minute(_minute) {
+	        return padStartWith0(_minute);
+	    },
+	    confirmButton: 'Confirm',
+	    cancelButton: 'Cancel',
+	    dateLabel: function dateLabel(outOfRange, date, type, use24) {
+	        if (outOfRange) {
+	            return 'Date out of range';
+	        }
+	        switch (type) {
+	            case 'time':
+	                return enConfig.hour(date.getHours(), use24) + ':' + enConfig.minute(date.getMinutes()) + (use24 ? '' : ' ' + (date.getHours() < 12 ? enConfig.am : enConfig.pm));
+	            case 'month':
+	                return enConfig.month(date.getMonth()) + ' ' + enConfig.year(date.getFullYear());
+	            case 'datetime':
+	                return enConfig.month(date.getMonth()) + ' ' + enConfig.date(date.getDate()) + ' ' + enConfig.year(date.getFullYear()) + ' ' + enConfig.hour(date.getHours(), use24) + ':' + enConfig.minute(date.getMinutes()) + (use24 ? '' : ' ' + (date.getHours() < 12 ? enConfig.am : enConfig.pm));
+	            case 'date':
+	                return enConfig.month(date.getMonth()) + ' ' + enConfig.date(date.getDate()) + ' ' + enConfig.year(date.getFullYear());
+	            default:
+	                break;
+	        }
 	    }
+	};
+
+	var zhCNConfig = {
+	    order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],
+	    year: function year(_year2) {
+	        return _year2 + '年';
+	    },
+	    month: function month(_month2) {
+	        return _month2 + 1 + '月';
+	    },
+	    date: function date(_date2) {
+	        return _date2 + '日';
+	    },
+	    am: '上午',
+	    pm: '下午',
+	    hour: translateHour,
+	    minute: function minute(_minute2) {
+	        return padStartWith0(_minute2);
+	    },
+	    confirmButton: '确定',
+	    cancelButton: '取消',
+	    dateLabel: function dateLabel(outOfRange, date, type, use24) {
+	        if (outOfRange) {
+	            return '日期不在选择范围内';
+	        }
+	        switch (type) {
+	            case 'time':
+	                return '' + (use24 ? '' : date.getHours() < 12 ? zhCNConfig.am : zhCNConfig.pm) + zhCNConfig.hour(date.getHours(), use24) + ':' + zhCNConfig.minute(date.getMinutes());
+	            case 'month':
+	                return '' + zhCNConfig.year(date.getFullYear()) + zhCNConfig.month(date.getMonth());
+	            case 'datetime':
+	                return '' + zhCNConfig.year(date.getFullYear()) + zhCNConfig.month(date.getMonth()) + zhCNConfig.date(date.getDate()) + ' ' + (use24 ? '' : date.getHours() < 12 ? zhCNConfig.am : zhCNConfig.pm) + zhCNConfig.hour(date.getHours(), use24) + ':' + zhCNConfig.minute(date.getMinutes());
+	            case 'date':
+	                return '' + zhCNConfig.year(date.getFullYear()) + zhCNConfig.month(date.getMonth()) + zhCNConfig.date(date.getDate());
+	            default:
+	                break;
+	        }
+	    }
+	};
+
+	var localeConfigs = {
+	    'en': enConfig,
+	    'zh-cn': zhCNConfig
 	};
 
 	// to keep this library size small, expose a function to expand localeConfigs on demand
 	var addLocaleConfig = exports.addLocaleConfig = function addLocaleConfig(name, config) {
-	    localeConfigs[name] = config;
+	    if (config && config.order instanceof Array && typeof config.year === 'function' && typeof config.month === 'function' && typeof config.date === 'function' && typeof config.hour === 'function' && typeof config.minute === 'function' && typeof config.dateLabel === 'function') {
+	        localeConfigs[name] = config;
+	    } else {
+	        console.error('addLocaleConfig: invalid locale config provided');
+	    }
 	};
 
 	var dateStringProp = function dateStringProp(props, propName, componentName) {
 	    if (!props[propName]) return;
+	    if (typeof props[propName] === 'number') {
+	        return;
+	    }
+	    if (typeof props[propName] !== 'string') {
+	        return new Error(componentName + ': ' + propName + ' invalid date string provided.');
+	    }
+	    if (props.type === 'time') {
+	        if (props[propName].match(/\d{2}:\d{2}/) && props[propName].length === 5) {
+	            return;
+	        }
+	    }
 	    if (Number.isNaN(new Date(props[propName]))) {
 	        return new Error(componentName + ': ' + propName + ' invalid date string provided.');
 	    }
+	};
+
+	var localeProp = function localeProp(props, propName, componentName) {
+	    if (typeof props[propName] === 'string' && localeConfigs[props[propName]]) {
+	        return;
+	    }
+	    return new Error(componentName + ': ' + propName + ' invalid value provided.');
 	};
 
 	var DatePicker = function (_Component) {
@@ -170,32 +238,70 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DatePicker).call(this, props));
 
+	        _this.getStaticText = _this.getStaticText.bind(_this);
 	        _this.getTitle = _this.getTitle.bind(_this);
 	        _this.onSelect = _this.onSelect.bind(_this);
 	        _this.onDidSelect = _this.onDidSelect.bind(_this);
+	        _this.onOpen = _this.onOpen.bind(_this);
+	        _this.onCancel = _this.onCancel.bind(_this);
 
-	        _this.state = _this.calColumnsAndKeys(_this.getDefaults(props));
+	        var minDate = _this.parseDateString(props.min, props.type);
+	        var maxDate = _this.parseDateString(props.max, props.type);
+	        var defaultDate = _this.getDefaultDate(props);
+	        _this.state = _this.calColumnsAndKeys(_this.props, defaultDate, minDate, maxDate);
 	        return _this;
 	    }
 
 	    _createClass(DatePicker, [{
-	        key: 'getDefaults',
-	        value: function getDefaults(props) {
+	        key: 'parseDateString',
+	        value: function parseDateString(dateString, type) {
+	            var ret = void 0;
+	            if (type === 'time') {
+	                ret = new Date();
+	                if (dateString.match(/\d{2}:\d{2}/) && dateString.length === 5) {
+	                    ret.setHours(parseInt(dateString.substring(0, 2)));
+	                    ret.setMinutes(parseInt(dateString.substring(3, 5)));
+	                } else {
+	                    var temp = new Date(dateString);
+	                    ret.setHours(temp.getHours());
+	                    ret.setMinutes(temp.getMinutes());
+	                }
+	            } else if (type === 'date') {
+	                ret = new Date(dateString);
+	                ret.setHours(0);
+	                ret.setMinutes(0);
+	            } else if (type === 'month') {
+	                ret = new Date(dateString);
+	                ret.setDate(1);
+	                ret.setHours(0);
+	                ret.setMinutes(0);
+	            } else if (type === 'datetime') {
+	                ret = new Date(dateString);
+	            }
+	            ret.setSeconds(0);
+	            ret.setMilliseconds(0);
+	            return ret;
+	        }
+	    }, {
+	        key: 'getDefaultDate',
+	        value: function getDefaultDate(props) {
 	            props = props || this.props;
-	            var defaultDate = props.defaultDate ? new Date(props.defaultDate) : new Date();
-	            return {
-	                year: defaultDate.getFullYear(),
-	                month: defaultDate.getMonth(),
-	                date: defaultDate.getDate(),
-	                ampm: isPm(defaultDate) ? 'pm' : 'am',
-	                hour: defaultDate.getHours(),
-	                minute: defaultDate.getMinutes()
-	            };
+	            return this.parseDateString(props.defaultDate ? props.defaultDate : props.min, props.type);
 	        }
 	    }, {
 	        key: 'componentWillReceiveProps',
 	        value: function componentWillReceiveProps(nextProps) {
-	            var hasChanged = false;
+	            var minDate = this.parseDateString(nextProps.min, nextProps.type);
+	            var maxDate = this.parseDateString(nextProps.max, nextProps.type);
+	            var defaultDate = this.getDefaultDate(nextProps);
+	            this.setState(this.calColumnsAndKeys(nextProps, defaultDate, minDate, maxDate));
+	        }
+	    }, {
+	        key: 'shouldComponentUpdate',
+	        value: function shouldComponentUpdate(nextProps, nextState) {
+	            if (Object.keys(this.props).length !== Object.keys(nextProps).length) {
+	                return true;
+	            }
 	            var _iteratorNormalCompletion = true;
 	            var _didIteratorError = false;
 	            var _iteratorError = undefined;
@@ -204,11 +310,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                for (var _iterator = Object.keys(nextProps)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                    var key = _step.value;
 
-	                    if (nextProps[key] !== this.props[key]) {
-	                        hasChanged = true;
-	                        break;
+	                    if (!key.startsWith('on') && nextProps[key] !== this.props[key]) {
+	                        return true;
 	                    }
 	                }
+	                //console.log('equal props')
 	            } catch (err) {
 	                _didIteratorError = true;
 	                _iteratorError = err;
@@ -224,10 +330,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 
-	            if (hasChanged) {
-	                var defaults = this.getDefaults(nextProps);
-	                this.setState(this.calColumnsAndKeys(defaults, nextProps));
+	            if (Object.keys(this.state).length !== Object.keys(nextState).length) {
+	                return true;
 	            }
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+
+	            try {
+	                for (var _iterator2 = Object.keys(nextState)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var _key = _step2.value;
+
+	                    if (_key === 'keys' || _key === 'columns') {
+	                        if (!(0, _deepEqual2.default)(nextState[_key], this.state[_key])) {
+	                            return true;
+	                        }
+	                    } else if (_key === 'defaultDate' || _key === 'minDate' || _key === 'maxDate') {
+	                        if (nextState[_key].getTime() !== this.state[_key].getTime()) {
+	                            return true;
+	                        }
+	                    } else if (nextState[_key] !== this.state[_key]) {
+	                        return true;
+	                    }
+	                }
+	                //console.log('no need to update')
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                        _iterator2.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+
+	            return false;
+	        }
+	    }, {
+	        key: 'getTitle',
+	        value: function getTitle() {
+	            return this.props.title;
 	        }
 	    }, {
 	        key: 'getPrefix',
@@ -244,42 +391,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }, {
-	        key: 'getTitle',
-	        value: function getTitle(selectedValues) {
-	            var _this2 = this;
-
-	            return _react2.default.createElement(
-	                'span',
-	                null,
-	                selectedValues.map(function (e, i) {
-	                    return _react2.default.createElement(
-	                        'span',
-	                        { key: i },
-	                        _this2.getPrefix(i),
-	                        e.value
-	                    );
-	                })
-	            );
-	        }
-	    }, {
-	        key: 'getValueFromState',
-	        value: function getValueFromState(key, defaultIndex) {
-	            var state = this.state;
-	            var columnIndex = state.keys.findIndex(function (e) {
-	                return e === key;
-	            });
-	            defaultIndex = typeof defaultIndex === 'number' ? defaultIndex : state.columns[columnIndex].defaultIndex;
-	            return state.columns[columnIndex].list[defaultIndex].key;
+	        key: 'getStaticText',
+	        value: function getStaticText(selectedValues) {
+	            var locale = localeConfigs[this.props.locale];
+	            if (!locale) return;
+	            return locale.dateLabel(this.state.outOfRange, this.state.defaultDate, this.props.type, this.props.use24hours);
 	        }
 	    }, {
 	        key: 'calColumnsAndKeys',
-	        value: function calColumnsAndKeys(defaults, props) {
+	        value: function calColumnsAndKeys(props, defaultDate, minDate, maxDate) {
 	            props = props || this.props;
 	            var _props = props;
 	            var type = _props.type;
 	            var use24hours = _props.use24hours;
-	            var min = _props.min;
-	            var max = _props.max;
 	            var locale = _props.locale;
 	            // 1. select keys
 	            // WARNING: keys in selectedKeys should be arranged in order to ensure DatePicker work properly
@@ -311,27 +435,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            // 2. calculate range for each
 	            var columnsDict = {};
-	            var minDate = new Date('' + min);
-	            var maxDate = new Date('' + max);
+	            // set min or max as default if out of range
+	            var outOfRange = false;
+	            if (defaultDate < minDate) {
+	                outOfRange = true;
+	                defaultDate = minDate;
+	            } else if (defaultDate > maxDate) {
+	                outOfRange = true;
+	                defaultDate = maxDate;
+	            }
 	            for (var i = 0, l = selectedKeys.length; i < l; i++) {
 	                switch (selectedKeys[i]) {
 	                    case 'year':
-	                        columnsDict[selectedKeys[i]] = this.calYear(minDate, maxDate, defaults);
+	                        columnsDict[selectedKeys[i]] = this.calYear(minDate, maxDate, defaultDate, locale);
 	                        break;
 	                    case 'month':
-	                        columnsDict[selectedKeys[i]] = this.calMonth(minDate, maxDate, defaults);
+	                        columnsDict[selectedKeys[i]] = this.calMonth(minDate, maxDate, defaultDate, locale);
 	                        break;
 	                    case 'date':
-	                        columnsDict[selectedKeys[i]] = this.calDate(minDate, maxDate, defaults);
+	                        columnsDict[selectedKeys[i]] = this.calDate(minDate, maxDate, defaultDate, locale);
 	                        break;
 	                    case 'ampm':
-	                        columnsDict[selectedKeys[i]] = this.calAMPM(minDate, maxDate, defaults);
+	                        columnsDict[selectedKeys[i]] = this.calAMPM(minDate, maxDate, defaultDate, locale);
 	                        break;
 	                    case 'hour':
-	                        columnsDict[selectedKeys[i]] = this.calHour(minDate, maxDate, defaults);
+	                        var ampm = void 0;
+	                        if (columnsDict.ampm) {
+	                            ampm = columnsDict.ampm.list[columnsDict.ampm.defaultIndex].key;
+	                        }
+	                        columnsDict[selectedKeys[i]] = this.calHour(minDate, maxDate, defaultDate, ampm, locale, use24hours);
 	                        break;
 	                    case 'minute':
-	                        columnsDict[selectedKeys[i]] = this.calMinute(minDate, maxDate, defaults);
+	                        columnsDict[selectedKeys[i]] = this.calMinute(minDate, maxDate, defaultDate, locale);
 	                        break;
 	                }
 	            }
@@ -347,7 +482,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            return {
 	                keys: keys,
-	                columns: columns
+	                columns: columns,
+	                outOfRange: outOfRange,
+	                defaultDate: defaultDate,
+	                minDate: minDate,
+	                maxDate: maxDate
 	            };
 	        }
 	    }, {
@@ -358,15 +497,74 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'onSelect',
 	        value: function onSelect(index, selectedValue) {
-	            var defaults = this.getDefaults();
-	            var newIndex = this.state.columns[index].list.findIndex(function (e) {
-	                return e.key === selectedValue.key;
-	            });
-	            for (var i = 0, l = this.state.keys.length; i < l; i++) {
-	                var key = this.state.keys[i];
-	                defaults[key] = this.getValueFromState(key, i === index ? newIndex : null);
+	            var _this2 = this;
+
+	            var date = new Date(this.state.defaultDate.getTime());
+	            var values = this.refs.select.selectedValues;
+	            // use sequence to ensure correctness
+	            var sequence = ['year', 'month', 'date', 'ampm', 'hour', 'minute'];
+
+	            var _loop = function _loop(i) {
+	                var realIndex = _this2.state.keys.findIndex(function (e) {
+	                    return e === sequence[i];
+	                });
+	                if (realIndex === -1) {
+	                    return 'continue';
+	                }
+	                switch (sequence[i]) {
+	                    case 'year':
+	                        date.setFullYear(values[realIndex].key);
+	                        break;
+	                    case 'month':
+	                        date.setDate(1); // incase Apr 31 becomes May 01
+	                        date.setMonth(values[realIndex].key);
+	                        break;
+	                    case 'date':
+	                        var days = daysInMonth(date.getFullYear(), date.getMonth() + 1);
+	                        if (values[realIndex].key > days) {
+	                            date.setDate(days);
+	                        } else {
+	                            date.setDate(values[realIndex].key);
+	                        }
+	                        break;
+	                    case 'minute':
+	                        date.setMinutes(values[realIndex].key);
+	                        break;
+	                    case 'hour':
+	                        if (!_this2.props.use24hours) {
+	                            var ampmIndex = _this2.state.keys.findIndex(function (e) {
+	                                return e === 'ampm';
+	                            });
+	                            var ampm = _this2.refs.select.selectedValues[ampmIndex].key;
+	                            if (ampm === 'pm' && values[realIndex].key < 12) {
+	                                date.setHours(values[realIndex].key + 12);
+	                                break;
+	                            } else if (ampm === 'am' && values[realIndex].key >= 12) {
+	                                date.setHours(values[realIndex].key - 12);
+	                                break;
+	                            }
+	                        }
+	                        date.setHours(values[realIndex].key);
+	                        break;
+	                    case 'ampm':
+	                    default:
+	                        break;
+	                }
+	            };
+
+	            for (var i = 0; i < sequence.length; i++) {
+	                var _ret = _loop(i);
+
+	                if (_ret === 'continue') continue;
 	            }
-	            this.setState(this.calColumnsAndKeys(defaults));
+	            if (date < this.state.minDate) {
+	                date = this.state.minDate;
+	            }
+	            if (date > this.state.maxDate) {
+	                date = this.state.maxDate;
+	            }
+	            //console.log('select new date', date)
+	            this.setState(this.calColumnsAndKeys(this.props, date, this.state.minDate, this.state.maxDate));
 
 	            if (this.props.onSelect) {
 	                this.props.onSelect(this.date);
@@ -380,13 +578,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }, {
+	        key: 'onOpen',
+	        value: function onOpen() {
+	            this._onOpenDate = this.state.defaultDate;
+	            if (this.props.onOpen) {
+	                this.props.onOpen();
+	            }
+	        }
+	    }, {
+	        key: 'onCancel',
+	        value: function onCancel() {
+	            if (this._onOpenDate) {
+	                this.setState(this.calColumnsAndKeys(this.props, this._onOpenDate, this.state.minDate, this.state.maxDate));
+	                this._onOpenDate = null;
+
+	                if (this.props.onCancel) {
+	                    this.props.onCancel();
+	                }
+	            }
+	        }
+	    }, {
 	        key: 'intersects',
 	        value: function intersects(min1, max1, min2, max2) {
 	            return !(max1.getTime() < min2.getTime() || min1.getTime() > max2.getTime());
 	        }
 	    }, {
 	        key: 'calYear',
-	        value: function calYear(min, max, defaults) {
+	        value: function calYear(min, max, defaults, locale) {
 	            var ret = { list: [], defaultIndex: -1 };
 	            for (var i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++) {
 	                var dMin = this.newDate(i, 1, 1, 0, 0);
@@ -394,98 +612,90 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
-	                        value: localeConfigs[this.props.locale].year(i)
+	                        value: localeConfigs[locale].year(i)
 	                    });
-	                    if (i === defaults.year) {
+	                    if (i === defaults.getFullYear()) {
 	                        ret.defaultIndex = index;
 	                    }
 	                    index++;
 	                }
 	            }
-	            if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1;
-	            if (ret.list.length > 0) defaults.year = ret.list[ret.defaultIndex].key;
 	            return ret;
 	        }
 	    }, {
 	        key: 'calMonth',
-	        value: function calMonth(min, max, defaults) {
+	        value: function calMonth(min, max, defaults, locale) {
 	            var ret = { list: [], defaultIndex: -1 };
 	            for (var i = 0, index = 0; i < 12; i++) {
-	                var dMin = this.newDate(defaults.year, i, 1, 0, 0);
-	                var dMax = this.newDate(defaults.year, i, daysInMonth(defaults.year, i + 1), 23, 59);
+	                var dMin = this.newDate(defaults.getFullYear(), i, 1, 0, 0);
+	                var dMax = this.newDate(defaults.getFullYear(), i, daysInMonth(defaults.getFullYear(), i + 1), 23, 59);
 	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
-	                        value: localeConfigs[this.props.locale].month(i)
+	                        value: localeConfigs[locale].month(i)
 	                    });
-	                    if (i === defaults.month) {
+	                    if (i === defaults.getMonth()) {
 	                        ret.defaultIndex = index;
 	                    }
 	                    index++;
 	                }
 	            }
-	            if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1;
-	            if (ret.list.length > 0) defaults.month = ret.list[ret.defaultIndex].key;
 	            return ret;
 	        }
 	    }, {
 	        key: 'calDate',
-	        value: function calDate(min, max, defaults) {
+	        value: function calDate(min, max, defaults, locale) {
 	            var ret = { list: [], defaultIndex: -1 };
-	            var days = daysInMonth(defaults.year, defaults.month + 1);
+	            var days = daysInMonth(defaults.getFullYear(), defaults.getMonth() + 1);
 	            for (var i = 1, index = 0; i <= days; i++) {
-	                var dMin = this.newDate(defaults.year, defaults.month, i, 0, 0);
-	                var dMax = this.newDate(defaults.year, defaults.month, i, 23, 59);
+	                var dMin = this.newDate(defaults.getFullYear(), defaults.getMonth(), i, 0, 0);
+	                var dMax = this.newDate(defaults.getFullYear(), defaults.getMonth(), i, 23, 59);
 	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: i,
-	                        value: localeConfigs[this.props.locale].date(i)
+	                        value: localeConfigs[locale].date(i)
 	                    });
-	                    if (i === defaults.date) {
+	                    if (i === defaults.getDate()) {
 	                        ret.defaultIndex = index;
 	                    }
 	                    index++;
 	                }
 	            }
-	            if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1;
-	            if (ret.list.length > 0) defaults.date = ret.list[ret.defaultIndex].key;
 	            return ret;
 	        }
 	    }, {
 	        key: 'calAMPM',
-	        value: function calAMPM(min, max, defaults) {
+	        value: function calAMPM(min, max, defaults, locale) {
 	            var ret = { list: [], defaultIndex: -1 };
 	            var index = 0;
-	            var dMin = this.newDate(defaults.year, defaults.month, defaults.date, 0, 0);
-	            var dMax = this.newDate(defaults.year, defaults.month, defaults.date, 11, 59);
+	            var dMin = this.newDate(defaults.getFullYear(), defaults.getMonth(), defaults.getDate(), 0, 0);
+	            var dMax = this.newDate(defaults.getFullYear(), defaults.getMonth(), defaults.getDate(), 11, 59);
 	            if (this.intersects(dMin, dMax, min, max)) {
 	                ret.list.push({
 	                    key: 'am',
-	                    value: localeConfigs[this.props.locale].am
+	                    value: localeConfigs[locale].am
 	                });
-	                if (defaults.ampm === 'am') {
+	                if (defaults.getHours() < 12) {
 	                    ret.defaultIndex = index;
 	                }
 	                index++;
 	            }
-	            dMin = this.newDate(defaults.year, defaults.month, defaults.date, 12, 0);
-	            dMax = this.newDate(defaults.year, defaults.month, defaults.date, 23, 59);
+	            dMin = this.newDate(defaults.getFullYear(), defaults.getMonth(), defaults.getDate(), 12, 0);
+	            dMax = this.newDate(defaults.getFullYear(), defaults.getMonth(), defaults.getDate(), 23, 59);
 	            if (this.intersects(dMin, dMax, min, max)) {
 	                ret.list.push({
 	                    key: 'pm',
-	                    value: localeConfigs[this.props.locale].pm
+	                    value: localeConfigs[locale].pm
 	                });
-	                if (defaults.ampm === 'pm') {
+	                if (defaults.getHours() >= 12) {
 	                    ret.defaultIndex = index;
 	                }
 	            }
-	            if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1;
-	            if (ret.list.length > 0) defaults.ampm = ret.list[ret.defaultIndex].key;
 	            return ret;
 	        }
 	    }, {
 	        key: 'calHour',
-	        value: function calHour(min, max, defaults) {
+	        value: function calHour(min, max, defaults, ampm, locale, use24hours) {
 	            var ret = { list: [], defaultIndex: -1 };
 	            var start = void 0,
 	                end = void 0;
@@ -498,81 +708,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            for (var i = start, index = 0; i <= end; i++) {
 	                var hours = i;
-	                if (!this.props.use24hours && defaults.ampm === 'pm') {
+	                if (!this.props.use24hours && ampm === 'pm') {
 	                    hours += 12;
 	                }
-	                var dMin = this.newDate(defaults.year, defaults.month, defaults.date, hours, 0);
-	                var dMax = this.newDate(defaults.year, defaults.month, defaults.date, hours, 59);
+	                var dMin = this.newDate(defaults.getFullYear(), defaults.getMonth(), defaults.getDate(), hours, 0);
+	                var dMax = this.newDate(defaults.getFullYear(), defaults.getMonth(), defaults.getDate(), hours, 59);
 	                if (this.intersects(dMin, dMax, min, max)) {
 	                    ret.list.push({
 	                        key: hours,
-	                        value: localeConfigs[this.props.locale].hour(hours, this.props.use24hours)
+	                        value: localeConfigs[locale].hour(hours, use24hours)
 	                    });
-	                    if (hours === defaults.hour) {
+	                    if (hours === defaults.getHours()) {
 	                        ret.defaultIndex = index;
 	                    }
 	                    index++;
 	                }
 	            }
-	            if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1;
-	            if (ret.list.length > 0) defaults.hour = ret.list[ret.defaultIndex].key;
 	            return ret;
 	        }
 	    }, {
 	        key: 'calMinute',
-	        value: function calMinute(min, max, defaults) {
+	        value: function calMinute(min, max, defaults, locale) {
 	            var ret = { list: [], defaultIndex: -1 };
 	            for (var i = 0, index = 0; i < 60; i++) {
-	                var d = this.newDate(defaults.year, defaults.month, defaults.date, defaults.hour, i);
+	                var d = this.newDate(defaults.getFullYear(), defaults.getMonth(), defaults.getDate(), defaults.getHours(), i);
 	                if (this.intersects(d, d, min, max)) {
 	                    ret.list.push({
 	                        key: i,
-	                        value: localeConfigs[this.props.locale].minute(i)
+	                        value: localeConfigs[locale].minute(i)
 	                    });
-	                    if (i === defaults.minute) {
+	                    if (i === defaults.getMinutes()) {
 	                        ret.defaultIndex = index;
 	                    }
 	                    index++;
 	                }
 	            }
-	            if (ret.defaultIndex === -1) ret.defaultIndex = ret.list.length - 1;
-	            if (ret.list.length > 0) defaults.minute = ret.list[ret.defaultIndex].key;
 	            return ret;
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var copyColumns = [],
-	                columns = this.state.columns;
-	            for (var i = 0, l = columns.length; i < l; i++) {
-	                copyColumns.push({ list: [].concat(_toConsumableArray(columns[i].list)), defaultIndex: columns[i].defaultIndex });
-	            }
-	            return _react2.default.createElement(_reactUltraSelect2.default, { columns: copyColumns,
+	            var locale = localeConfigs[this.props.locale];
+
+	            return _react2.default.createElement(_reactUltraSelect2.default, _extends({}, this.props, { columns: this.state.columns, ref: 'select',
+	                confirmButton: locale.confirmButton,
+	                cancelButton: locale.cancelButton,
 	                onSelect: this.onSelect,
 	                onDidSelect: this.onDidSelect,
-	                onOpen: this.props.onOpen,
-	                onClose: this.props.onClose,
-	                confirmButton: localeConfigs[this.props.locale].confirmButton,
-	                getTitle: this.props.getTitle || this.getTitle,
-	                getStaticText: this.props.getStaticText || this.getTitle,
-	                rowsVisible: this.props.rowsVisible,
-	                rowHeight: this.props.rowHeight,
-	                rowHeightUnit: this.props.rowHeightUnit,
-	                backdrop: this.props.backdrop,
-	                disabled: this.props.disabled,
-	                isOpen: this.props.isOpen,
-	                useTouchTap: this.props.useTouchTap
-	            });
+	                getStaticText: this.getStaticText,
+	                getTitle: this.getTitle,
+	                onOpen: this.onOpen,
+	                onCancel: this.onCancel }));
 	        }
 	    }, {
 	        key: 'date',
 	        get: function get() {
-	            var defaults = this.getDefaults();
-	            for (var i = 0, l = this.state.keys.length; i < l; i++) {
-	                var key = this.state.keys[i];
-	                defaults[key] = this.getValueFromState(key, null);
-	            }
-	            return this.newDate(defaults.year, defaults.month, defaults.date, defaults.hour, defaults.minute);
+	            return this.state.outOfRange ? Number.NaN : this.state.defaultDate;
 	        }
 	    }]);
 
@@ -584,26 +775,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    min: dateStringProp,
 	    defaultDate: dateStringProp,
 	    type: _react.PropTypes.oneOf(['date', 'datetime', 'time', 'month']),
-	    locale: _react.PropTypes.string,
+	    locale: localeProp,
 	    use24hours: _react.PropTypes.bool,
 
+	    title: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.node]),
 	    onSelect: _react.PropTypes.func,
-	    onDidSelect: _react.PropTypes.func,
-	    // props inherited from UltraSelect
-	    getTitle: _react.PropTypes.func,
-	    getStaticText: _react.PropTypes.func,
-	    rowsVisible: _react.PropTypes.number,
-	    rowHeight: _react.PropTypes.number,
-	    rowHeightUnit: _react.PropTypes.string,
-	    backdrop: _react.PropTypes.bool,
-	    disabled: _react.PropTypes.bool,
-	    useTouchTap: _react.PropTypes.bool,
-	    onOpen: _react.PropTypes.func,
-	    onClose: _react.PropTypes.func,
-	    isOpen: _react.PropTypes.bool
+	    onDidSelect: _react.PropTypes.func
 	};
 	DatePicker.defaultProps = {
-	    min: '01 Jan 1970',
+	    min: '01 Jan 1970 00:00',
 	    max: '19 Jan 2038 03:14',
 	    type: 'date',
 	    locale: 'en',
@@ -628,6 +808,147 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_4__;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var pSlice = Array.prototype.slice;
+	var objectKeys = __webpack_require__(6);
+	var isArguments = __webpack_require__(7);
+
+	var deepEqual = module.exports = function (actual, expected, opts) {
+	  if (!opts) opts = {};
+	  // 7.1. All identical values are equivalent, as determined by ===.
+	  if (actual === expected) {
+	    return true;
+
+	  } else if (actual instanceof Date && expected instanceof Date) {
+	    return actual.getTime() === expected.getTime();
+
+	  // 7.3. Other pairs that do not both pass typeof value == 'object',
+	  // equivalence is determined by ==.
+	  } else if (!actual || !expected || typeof actual != 'object' && typeof expected != 'object') {
+	    return opts.strict ? actual === expected : actual == expected;
+
+	  // 7.4. For all other Object pairs, including Array objects, equivalence is
+	  // determined by having the same number of owned properties (as verified
+	  // with Object.prototype.hasOwnProperty.call), the same set of keys
+	  // (although not necessarily the same order), equivalent values for every
+	  // corresponding key, and an identical 'prototype' property. Note: this
+	  // accounts for both named and indexed properties on Arrays.
+	  } else {
+	    return objEquiv(actual, expected, opts);
+	  }
+	}
+
+	function isUndefinedOrNull(value) {
+	  return value === null || value === undefined;
+	}
+
+	function isBuffer (x) {
+	  if (!x || typeof x !== 'object' || typeof x.length !== 'number') return false;
+	  if (typeof x.copy !== 'function' || typeof x.slice !== 'function') {
+	    return false;
+	  }
+	  if (x.length > 0 && typeof x[0] !== 'number') return false;
+	  return true;
+	}
+
+	function objEquiv(a, b, opts) {
+	  var i, key;
+	  if (isUndefinedOrNull(a) || isUndefinedOrNull(b))
+	    return false;
+	  // an identical 'prototype' property.
+	  if (a.prototype !== b.prototype) return false;
+	  //~~~I've managed to break Object.keys through screwy arguments passing.
+	  //   Converting to array solves the problem.
+	  if (isArguments(a)) {
+	    if (!isArguments(b)) {
+	      return false;
+	    }
+	    a = pSlice.call(a);
+	    b = pSlice.call(b);
+	    return deepEqual(a, b, opts);
+	  }
+	  if (isBuffer(a)) {
+	    if (!isBuffer(b)) {
+	      return false;
+	    }
+	    if (a.length !== b.length) return false;
+	    for (i = 0; i < a.length; i++) {
+	      if (a[i] !== b[i]) return false;
+	    }
+	    return true;
+	  }
+	  try {
+	    var ka = objectKeys(a),
+	        kb = objectKeys(b);
+	  } catch (e) {//happens when one is a string literal and the other isn't
+	    return false;
+	  }
+	  // having the same number of owned properties (keys incorporates
+	  // hasOwnProperty)
+	  if (ka.length != kb.length)
+	    return false;
+	  //the same set of keys (although not necessarily the same order),
+	  ka.sort();
+	  kb.sort();
+	  //~~~cheap key test
+	  for (i = ka.length - 1; i >= 0; i--) {
+	    if (ka[i] != kb[i])
+	      return false;
+	  }
+	  //equivalent values for every corresponding key, and
+	  //~~~possibly expensive deep test
+	  for (i = ka.length - 1; i >= 0; i--) {
+	    key = ka[i];
+	    if (!deepEqual(a[key], b[key], opts)) return false;
+	  }
+	  return typeof a === typeof b;
+	}
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	exports = module.exports = typeof Object.keys === 'function'
+	  ? Object.keys : shim;
+
+	exports.shim = shim;
+	function shim (obj) {
+	  var keys = [];
+	  for (var key in obj) keys.push(key);
+	  return keys;
+	}
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	var supportsArgumentsClass = (function(){
+	  return Object.prototype.toString.call(arguments)
+	})() == '[object Arguments]';
+
+	exports = module.exports = supportsArgumentsClass ? supported : unsupported;
+
+	exports.supported = supported;
+	function supported(object) {
+	  return Object.prototype.toString.call(object) == '[object Arguments]';
+	};
+
+	exports.unsupported = unsupported;
+	function unsupported(object){
+	  return object &&
+	    typeof object == 'object' &&
+	    typeof object.length == 'number' &&
+	    Object.prototype.hasOwnProperty.call(object, 'callee') &&
+	    !Object.prototype.propertyIsEnumerable.call(object, 'callee') ||
+	    false;
+	};
+
 
 /***/ }
 /******/ ])

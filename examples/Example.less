@@ -28,3 +28,16 @@
     margin-bottom: 20px;
   }
 }
+
+@color-text-link: #1969b8;
+a {
+  color: @color-text-link;
+  text-decoration: none;
+  &:visited {
+    color: @color-text-link;
+  }
+  &:active {
+    color: darken(@color-text-link, 20%);
+    text-decoration: none;
+  }
+}

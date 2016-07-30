@@ -1,10 +1,11 @@
 {
   "name": "react-ultra-date-picker",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "An iOS like, comprehensive date picker component for React",
   "main": "dist/react-ultra-date-picker.js",
   "scripts": {
-    "build": "rm -rf dist&&webpack --config webpack.config.js --progress --colors",
+    "build-dist": "webpack --config webpack.config.js --progress --colors",
+    "build": "npm run build-dist&&export NODE_ENV=production&&npm run build-dist",
     "prepublish": "npm run build",
     "examples": "webpack-dev-server --content-base examples/ --config examples/webpack.config.js --progress --colors --hot --inline",
     "build-demo": "rm -rf demo&&export NODE_ENV=production&&webpack --config examples/webpack.config.prod.js --progress --colors"
@@ -27,6 +28,12 @@
     "url": "https://github.com/swenyang/react-date-picker/issues"
   },
   "homepage": "https://github.com/swenyang/react-date-picker#readme",
+  "dependencies": {
+    "deep-equal": "^1.0.1",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "react-ultra-select": "^1.1.0"
+  },
   "devDependencies": {
     "babel-core": "^6.9.0",
     "babel-loader": "^6.2.4",
@@ -36,13 +43,9 @@
     "babel-preset-react": "^6.5.0",
     "css-loader": "^0.23.1",
     "html-webpack-plugin": "^2.19.0",
-    "iscroll": "^5.2.0",
-    "iscroll-react": "^1.0.3",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
-    "react": "^15.1.0",
-    "react-dom": "^15.1.0",
-    "react-ultra-select": "^1.0.10",
+    "react-addons-perf": "^15.1.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
