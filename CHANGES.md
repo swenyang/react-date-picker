@@ -2,7 +2,7 @@
 
 ## Version 1.1.0
 
-Date: ??
+Date: 2016-07-30
 
 ### FEATURES
 

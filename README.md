@@ -3,6 +3,8 @@ An iOS like, comprehensive date picker component for React.
 
 If you are looking for a React Date Picker working on mobile platforms, this one would be a good choice. After browsing a lot of React Date Picker projects on GitHub, I found that most of them are PC-oriented, so I decided to write one for mobile platforms. This is how [React Ultra Select][1] and [React Ultra Date Picker][2] come.
 
+Version <= 1.0.7 uses [iScroll][3] which provides smoother scrolling experience, however, increases file size significantly.
+
 # Features
 
 - **Supporting 4 Types of Date Picker**
@@ -160,7 +162,7 @@ React Ultra Date Picker shares same events/callbacks with React Ultra Select:
 
 - `onClose()`
 
-    Will be called when the selection panel hide.
+    Will be called when the selection panel hides.
 
 - `onConfirm()`
 
