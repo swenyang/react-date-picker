@@ -1,14 +1,15 @@
 {
   "name": "react-ultra-date-picker",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An iOS like, comprehensive date picker component for React",
   "main": "dist/react-ultra-date-picker.js",
   "scripts": {
     "build-dist": "webpack --config webpack.config.js --progress --colors",
-    "build": "npm run build-dist&&export NODE_ENV=production&&npm run build-dist",
+    "build": "npm run lint && npm run build-dist&&export NODE_ENV=production&&npm run build-dist",
     "prepublish": "npm run build",
     "examples": "webpack-dev-server --content-base examples/ --config examples/webpack.config.js --progress --colors --hot --inline",
-    "build-demo": "rm -rf demo&&export NODE_ENV=production&&webpack --config examples/webpack.config.prod.js --progress --colors"
+    "build-demo": "rm -rf demo&&export NODE_ENV=production&&webpack --config examples/webpack.config.prod.js --progress --colors",
+    "lint": "./node_modules/.bin/eslint src/*.js"
   },
   "repository": {
     "type": "git",
@@ -33,7 +34,7 @@
     "react": "^15.1.0",
     "react-addons-perf": "^15.1.0",
     "react-dom": "^15.1.0",
-    "react-ultra-select": "^1.1.0"
+    "react-ultra-select": "~1.0.12"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",

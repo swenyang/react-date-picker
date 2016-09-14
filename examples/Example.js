@@ -184,7 +184,7 @@ class Example extends Component {
                     ></DatePicker>
                     <br /><br />
                     <b>Source Code:</b>
-                    <pre style={{ whiteSpace: 'pre-wrap' }}><code>
+                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}><code>
                         {`import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from 'react-ultra-date-picker'
 
 const jaConfig = {

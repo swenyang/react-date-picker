@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("react"), require("react-dom"), require("react-ultra-select"));
+		module.exports = factory(require("react"), require("react-ultra-select"));
 	else if(typeof define === 'function' && define.amd)
-		define(["react", "react-dom", "react-ultra-select"], factory);
+		define(["react", "react-ultra-select"], factory);
 	else if(typeof exports === 'object')
-		exports["react-ultra-date-picker"] = factory(require("react"), require("react-dom"), require("react-ultra-select"));
+		exports["react-ultra-date-picker"] = factory(require("react"), require("react-ultra-select"));
 	else
-		root["react-ultra-date-picker"] = factory(root["react"], root["react-dom"], root["react-ultra-select"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_4__) {
+		root["react-ultra-date-picker"] = factory(root["react"], root["react-ultra-select"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -76,15 +76,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactDom = __webpack_require__(3);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _reactUltraSelect = __webpack_require__(4);
+	var _reactUltraSelect = __webpack_require__(3);
 
 	var _reactUltraSelect2 = _interopRequireDefault(_reactUltraSelect);
 
-	var _deepEqual = __webpack_require__(5);
+	var _deepEqual = __webpack_require__(4);
 
 	var _deepEqual2 = _interopRequireDefault(_deepEqual);
 
@@ -95,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	//import UltraSelect from './UltraSelect'
+	// import UltraSelect from './UltraSelect'
 
 
 	// http://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
@@ -112,7 +108,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var translateHour = exports.translateHour = function translateHour(hour, use24hours) {
-	    return use24hours ? padStartWith0(hour) : hour % 12 === 0 ? '12' : padStartWith0(hour % 12);
+	    if (use24hours) {
+	        return padStartWith0(hour);
+	    }
+	    if (hour % 12 === 0) {
+	        return '12';
+	    }
+	    return padStartWith0(hour % 12);
 	};
 
 	var enConfig = {
@@ -148,7 +150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 'date':
 	                return enConfig.month(date.getMonth()) + ' ' + enConfig.date(date.getDate()) + ' ' + enConfig.year(date.getFullYear());
 	            default:
-	                break;
+	                return '';
 	        }
 	    }
 	};
@@ -176,23 +178,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (outOfRange) {
 	            return '日期不在选择范围内';
 	        }
+	        var ampmStr = '';
+	        if (!use24) {
+	            ampmStr = date.getHours() < 12 ? zhCNConfig.am : zhCNConfig.pm;
+	        }
 	        switch (type) {
 	            case 'time':
-	                return '' + (use24 ? '' : date.getHours() < 12 ? zhCNConfig.am : zhCNConfig.pm) + zhCNConfig.hour(date.getHours(), use24) + ':' + zhCNConfig.minute(date.getMinutes());
+	                return '' + ampmStr + zhCNConfig.hour(date.getHours(), use24) + ':' + zhCNConfig.minute(date.getMinutes());
 	            case 'month':
 	                return '' + zhCNConfig.year(date.getFullYear()) + zhCNConfig.month(date.getMonth());
 	            case 'datetime':
-	                return '' + zhCNConfig.year(date.getFullYear()) + zhCNConfig.month(date.getMonth()) + zhCNConfig.date(date.getDate()) + ' ' + (use24 ? '' : date.getHours() < 12 ? zhCNConfig.am : zhCNConfig.pm) + zhCNConfig.hour(date.getHours(), use24) + ':' + zhCNConfig.minute(date.getMinutes());
+	                return '' + zhCNConfig.year(date.getFullYear()) + zhCNConfig.month(date.getMonth()) + zhCNConfig.date(date.getDate()) + ' ' + ampmStr + zhCNConfig.hour(date.getHours(), use24) + ':' + zhCNConfig.minute(date.getMinutes());
 	            case 'date':
 	                return '' + zhCNConfig.year(date.getFullYear()) + zhCNConfig.month(date.getMonth()) + zhCNConfig.date(date.getDate());
 	            default:
-	                break;
+	                return '';
 	        }
 	    }
 	};
 
 	var localeConfigs = {
-	    'en': enConfig,
+	    en: enConfig,
 	    'zh-cn': zhCNConfig
 	};
 
@@ -206,26 +212,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var dateStringProp = function dateStringProp(props, propName, componentName) {
-	    if (!props[propName]) return;
+	    if (!props[propName]) return null;
 	    if (typeof props[propName] === 'number') {
-	        return;
+	        return null;
 	    }
 	    if (typeof props[propName] !== 'string') {
 	        return new Error(componentName + ': ' + propName + ' invalid date string provided.');
 	    }
 	    if (props.type === 'time') {
 	        if (props[propName].match(/\d{2}:\d{2}/) && props[propName].length === 5) {
-	            return;
+	            return null;
 	        }
 	    }
 	    if (Number.isNaN(new Date(props[propName]))) {
 	        return new Error(componentName + ': ' + propName + ' invalid date string provided.');
 	    }
+	    return null;
 	};
 
 	var localeProp = function localeProp(props, propName, componentName) {
 	    if (typeof props[propName] === 'string' && localeConfigs[props[propName]]) {
-	        return;
+	        return null;
 	    }
 	    return new Error(componentName + ': ' + propName + ' invalid value provided.');
 	};
@@ -253,42 +260,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    _createClass(DatePicker, [{
-	        key: 'parseDateString',
-	        value: function parseDateString(dateString, type) {
-	            var ret = void 0;
-	            if (type === 'time') {
-	                ret = new Date();
-	                if (dateString.match(/\d{2}:\d{2}/) && dateString.length === 5) {
-	                    ret.setHours(parseInt(dateString.substring(0, 2)));
-	                    ret.setMinutes(parseInt(dateString.substring(3, 5)));
-	                } else {
-	                    var temp = new Date(dateString);
-	                    ret.setHours(temp.getHours());
-	                    ret.setMinutes(temp.getMinutes());
-	                }
-	            } else if (type === 'date') {
-	                ret = new Date(dateString);
-	                ret.setHours(0);
-	                ret.setMinutes(0);
-	            } else if (type === 'month') {
-	                ret = new Date(dateString);
-	                ret.setDate(1);
-	                ret.setHours(0);
-	                ret.setMinutes(0);
-	            } else if (type === 'datetime') {
-	                ret = new Date(dateString);
-	            }
-	            ret.setSeconds(0);
-	            ret.setMilliseconds(0);
-	            return ret;
-	        }
-	    }, {
-	        key: 'getDefaultDate',
-	        value: function getDefaultDate(props) {
-	            props = props || this.props;
-	            return this.parseDateString(props.defaultDate ? props.defaultDate : props.min, props.type);
-	        }
-	    }, {
 	        key: 'componentWillReceiveProps',
 	        value: function componentWillReceiveProps(nextProps) {
 	            var minDate = this.parseDateString(nextProps.min, nextProps.type);
@@ -314,7 +285,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        return true;
 	                    }
 	                }
-	                //console.log('equal props')
+	                // console.log('equal props')
 	            } catch (err) {
 	                _didIteratorError = true;
 	                _iteratorError = err;
@@ -353,7 +324,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        return true;
 	                    }
 	                }
-	                //console.log('no need to update')
+	                // console.log('no need to update')
 	            } catch (err) {
 	                _didIteratorError2 = true;
 	                _iteratorError2 = err;
@@ -372,39 +343,163 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return false;
 	        }
 	    }, {
+	        key: 'onSelect',
+	        value: function onSelect() {
+	            var _this2 = this;
+
+	            var date = new Date(this.state.defaultDate.getTime());
+	            var values = this.refs.select.selectedValues;
+	            // use sequence to ensure correctness
+	            var sequence = ['year', 'month', 'date', 'ampm', 'hour', 'minute'];
+
+	            var _loop = function _loop(i) {
+	                var realIndex = _this2.state.keys.findIndex(function (e) {
+	                    return e === sequence[i];
+	                });
+	                if (realIndex !== -1) {
+	                    switch (sequence[i]) {
+	                        case 'year':
+	                            date.setFullYear(values[realIndex].key);
+	                            break;
+	                        case 'month':
+	                            date.setDate(1); // incase Apr 31 becomes May 01
+	                            date.setMonth(values[realIndex].key);
+	                            break;
+	                        case 'date':
+	                            {
+	                                var days = daysInMonth(date.getFullYear(), date.getMonth() + 1);
+	                                if (values[realIndex].key > days) {
+	                                    date.setDate(days);
+	                                } else {
+	                                    date.setDate(values[realIndex].key);
+	                                }
+	                                break;
+	                            }
+	                        case 'minute':
+	                            date.setMinutes(values[realIndex].key);
+	                            break;
+	                        case 'hour':
+	                            if (!_this2.props.use24hours) {
+	                                var ampmIndex = _this2.state.keys.findIndex(function (e) {
+	                                    return e === 'ampm';
+	                                });
+	                                var ampm = _this2.refs.select.selectedValues[ampmIndex].key;
+	                                if (ampm === 'pm' && values[realIndex].key < 12) {
+	                                    date.setHours(values[realIndex].key + 12);
+	                                    break;
+	                                } else if (ampm === 'am' && values[realIndex].key >= 12) {
+	                                    date.setHours(values[realIndex].key - 12);
+	                                    break;
+	                                }
+	                            }
+	                            date.setHours(values[realIndex].key);
+	                            break;
+	                        case 'ampm':
+	                        default:
+	                            break;
+	                    }
+	                }
+	            };
+
+	            for (var i = 0; i < sequence.length; i++) {
+	                _loop(i);
+	            }
+	            if (date < this.state.minDate) {
+	                date = this.state.minDate;
+	            }
+	            if (date > this.state.maxDate) {
+	                date = this.state.maxDate;
+	            }
+	            // console.log('select new date', date)
+	            this.setState(this.calColumnsAndKeys(this.props, date, this.state.minDate, this.state.maxDate));
+
+	            if (this.props.onSelect) {
+	                this.props.onSelect(this.date);
+	            }
+	        }
+	    }, {
+	        key: 'onDidSelect',
+	        value: function onDidSelect() {
+	            if (this.props.onDidSelect) {
+	                this.props.onDidSelect(this.date);
+	            }
+	        }
+	    }, {
+	        key: 'onOpen',
+	        value: function onOpen() {
+	            this.mOnOpenDate = this.state.defaultDate;
+	            if (this.props.onOpen) {
+	                this.props.onOpen();
+	            }
+	        }
+	    }, {
+	        key: 'onCancel',
+	        value: function onCancel() {
+	            if (this.mOnOpenDate) {
+	                this.setState(this.calColumnsAndKeys(this.props, this.mOnOpenDate, this.state.minDate, this.state.maxDate));
+	                this.mOnOpenDate = null;
+
+	                if (this.props.onCancel) {
+	                    this.props.onCancel();
+	                }
+	            }
+	        }
+	    }, {
 	        key: 'getTitle',
 	        value: function getTitle() {
 	            return this.props.title;
 	        }
 	    }, {
-	        key: 'getPrefix',
-	        value: function getPrefix(i) {
-	            if (i === 0) return '';
-	            switch (this.state.keys[i]) {
-	                case 'hour':
-	                case 'ampm':
-	                    return ' ';
-	                case 'minute':
-	                    return ':';
-	                default:
-	                    return '-';
-	            }
-	        }
-	    }, {
 	        key: 'getStaticText',
-	        value: function getStaticText(selectedValues) {
+	        value: function getStaticText() {
 	            var locale = localeConfigs[this.props.locale];
-	            if (!locale) return;
+	            if (!locale) return null;
 	            return locale.dateLabel(this.state.outOfRange, this.state.defaultDate, this.props.type, this.props.use24hours);
 	        }
 	    }, {
+	        key: 'getDefaultDate',
+	        value: function getDefaultDate(props) {
+	            var p = props || this.props;
+	            return this.parseDateString(p.defaultDate ? p.defaultDate : p.min, p.type);
+	        }
+	    }, {
+	        key: 'parseDateString',
+	        value: function parseDateString(dateString, type) {
+	            var ret = void 0;
+	            if (type === 'time') {
+	                ret = new Date();
+	                if (dateString.match(/\d{2}:\d{2}/) && dateString.length === 5) {
+	                    ret.setHours(parseInt(dateString.substring(0, 2), 10));
+	                    ret.setMinutes(parseInt(dateString.substring(3, 5), 10));
+	                } else {
+	                    var temp = new Date(dateString);
+	                    ret.setHours(temp.getHours());
+	                    ret.setMinutes(temp.getMinutes());
+	                }
+	            } else if (type === 'date') {
+	                ret = new Date(dateString);
+	                ret.setHours(0);
+	                ret.setMinutes(0);
+	            } else if (type === 'month') {
+	                ret = new Date(dateString);
+	                ret.setDate(1);
+	                ret.setHours(0);
+	                ret.setMinutes(0);
+	            } else if (type === 'datetime') {
+	                ret = new Date(dateString);
+	            }
+	            ret.setSeconds(0);
+	            ret.setMilliseconds(0);
+	            return ret;
+	        }
+	    }, {
 	        key: 'calColumnsAndKeys',
-	        value: function calColumnsAndKeys(props, defaultDate, minDate, maxDate) {
-	            props = props || this.props;
-	            var _props = props;
-	            var type = _props.type;
-	            var use24hours = _props.use24hours;
-	            var locale = _props.locale;
+	        value: function calColumnsAndKeys(p, d, minDate, maxDate) {
+	            var props = p || this.props;
+	            var defaultDate = d;
+	            var type = props.type;
+	            var use24hours = props.use24hours;
+	            var locale = props.locale;
 	            // 1. select keys
 	            // WARNING: keys in selectedKeys should be arranged in order to ensure DatePicker work properly
 	            // year -> month -> date -> ampm -> hour -> minute
@@ -431,6 +526,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                case 'month':
 	                    selectedKeys = ['year', 'month'];
+	                    break;
+	                default:
 	                    break;
 	            }
 	            // 2. calculate range for each
@@ -459,14 +556,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        columnsDict[selectedKeys[i]] = this.calAMPM(minDate, maxDate, defaultDate, locale);
 	                        break;
 	                    case 'hour':
-	                        var ampm = void 0;
-	                        if (columnsDict.ampm) {
-	                            ampm = columnsDict.ampm.list[columnsDict.ampm.defaultIndex].key;
+	                        {
+	                            var ampm = void 0;
+	                            if (columnsDict.ampm) {
+	                                ampm = columnsDict.ampm.list[columnsDict.ampm.defaultIndex].key;
+	                            }
+	                            columnsDict[selectedKeys[i]] = this.calHour(minDate, maxDate, defaultDate, ampm, locale, use24hours);
+	                            break;
 	                        }
-	                        columnsDict[selectedKeys[i]] = this.calHour(minDate, maxDate, defaultDate, ampm, locale, use24hours);
-	                        break;
 	                    case 'minute':
 	                        columnsDict[selectedKeys[i]] = this.calMinute(minDate, maxDate, defaultDate, locale);
+	                        break;
+	                    default:
 	                        break;
 	                }
 	            }
@@ -493,109 +594,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'newDate',
 	        value: function newDate(year, month, date, hour, minute) {
 	            return new Date(year, month, date, hour, minute);
-	        }
-	    }, {
-	        key: 'onSelect',
-	        value: function onSelect(index, selectedValue) {
-	            var _this2 = this;
-
-	            var date = new Date(this.state.defaultDate.getTime());
-	            var values = this.refs.select.selectedValues;
-	            // use sequence to ensure correctness
-	            var sequence = ['year', 'month', 'date', 'ampm', 'hour', 'minute'];
-
-	            var _loop = function _loop(i) {
-	                var realIndex = _this2.state.keys.findIndex(function (e) {
-	                    return e === sequence[i];
-	                });
-	                if (realIndex === -1) {
-	                    return 'continue';
-	                }
-	                switch (sequence[i]) {
-	                    case 'year':
-	                        date.setFullYear(values[realIndex].key);
-	                        break;
-	                    case 'month':
-	                        date.setDate(1); // incase Apr 31 becomes May 01
-	                        date.setMonth(values[realIndex].key);
-	                        break;
-	                    case 'date':
-	                        var days = daysInMonth(date.getFullYear(), date.getMonth() + 1);
-	                        if (values[realIndex].key > days) {
-	                            date.setDate(days);
-	                        } else {
-	                            date.setDate(values[realIndex].key);
-	                        }
-	                        break;
-	                    case 'minute':
-	                        date.setMinutes(values[realIndex].key);
-	                        break;
-	                    case 'hour':
-	                        if (!_this2.props.use24hours) {
-	                            var ampmIndex = _this2.state.keys.findIndex(function (e) {
-	                                return e === 'ampm';
-	                            });
-	                            var ampm = _this2.refs.select.selectedValues[ampmIndex].key;
-	                            if (ampm === 'pm' && values[realIndex].key < 12) {
-	                                date.setHours(values[realIndex].key + 12);
-	                                break;
-	                            } else if (ampm === 'am' && values[realIndex].key >= 12) {
-	                                date.setHours(values[realIndex].key - 12);
-	                                break;
-	                            }
-	                        }
-	                        date.setHours(values[realIndex].key);
-	                        break;
-	                    case 'ampm':
-	                    default:
-	                        break;
-	                }
-	            };
-
-	            for (var i = 0; i < sequence.length; i++) {
-	                var _ret = _loop(i);
-
-	                if (_ret === 'continue') continue;
-	            }
-	            if (date < this.state.minDate) {
-	                date = this.state.minDate;
-	            }
-	            if (date > this.state.maxDate) {
-	                date = this.state.maxDate;
-	            }
-	            //console.log('select new date', date)
-	            this.setState(this.calColumnsAndKeys(this.props, date, this.state.minDate, this.state.maxDate));
-
-	            if (this.props.onSelect) {
-	                this.props.onSelect(this.date);
-	            }
-	        }
-	    }, {
-	        key: 'onDidSelect',
-	        value: function onDidSelect(index, selectedValue) {
-	            if (this.props.onDidSelect) {
-	                this.props.onDidSelect(this.date);
-	            }
-	        }
-	    }, {
-	        key: 'onOpen',
-	        value: function onOpen() {
-	            this._onOpenDate = this.state.defaultDate;
-	            if (this.props.onOpen) {
-	                this.props.onOpen();
-	            }
-	        }
-	    }, {
-	        key: 'onCancel',
-	        value: function onCancel() {
-	            if (this._onOpenDate) {
-	                this.setState(this.calColumnsAndKeys(this.props, this._onOpenDate, this.state.minDate, this.state.maxDate));
-	                this._onOpenDate = null;
-
-	                if (this.props.onCancel) {
-	                    this.props.onCancel();
-	                }
-	            }
 	        }
 	    }, {
 	        key: 'intersects',
@@ -697,8 +695,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'calHour',
 	        value: function calHour(min, max, defaults, ampm, locale, use24hours) {
 	            var ret = { list: [], defaultIndex: -1 };
-	            var start = void 0,
-	                end = void 0;
+	            var start = void 0;
+	            var end = void 0;
 	            if (this.props.use24hours) {
 	                start = 0;
 	                end = 23;
@@ -758,7 +756,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                getStaticText: this.getStaticText,
 	                getTitle: this.getTitle,
 	                onOpen: this.onOpen,
-	                onCancel: this.onCancel }));
+	                onCancel: this.onCancel
+	            }));
 	        }
 	    }, {
 	        key: 'date',
@@ -780,7 +779,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    title: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.node]),
 	    onSelect: _react.PropTypes.func,
-	    onDidSelect: _react.PropTypes.func
+	    onDidSelect: _react.PropTypes.func,
+	    onOpen: _react.PropTypes.func,
+	    onCancel: _react.PropTypes.func
 	};
 	DatePicker.defaultProps = {
 	    min: '01 Jan 1970 00:00',
@@ -805,17 +806,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
-
-	module.exports = __WEBPACK_EXTERNAL_MODULE_4__;
-
-/***/ },
-/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var pSlice = Array.prototype.slice;
-	var objectKeys = __webpack_require__(6);
-	var isArguments = __webpack_require__(7);
+	var objectKeys = __webpack_require__(5);
+	var isArguments = __webpack_require__(6);
 
 	var deepEqual = module.exports = function (actual, expected, opts) {
 	  if (!opts) opts = {};
@@ -910,7 +905,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports) {
 
 	exports = module.exports = typeof Object.keys === 'function'
@@ -925,7 +920,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports) {
 
 	var supportsArgumentsClass = (function(){
