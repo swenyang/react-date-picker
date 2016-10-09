@@ -458,8 +458,8 @@ class DatePicker extends Component {
     calYear(min, max, defaults, locale) {
         const ret = { list: [], defaultIndex: -1 }
         for (let i = min.getFullYear(), l = max.getFullYear(), index = 0; i <= l; i++) {
-            const dMin = this.newDate(i, 1, 1, 0, 0)
-            const dMax = this.newDate(i, 12, 31, 23, 59)
+            const dMin = this.newDate(i, 0, 1, 0, 0)
+            const dMax = this.newDate(i, 11, 31, 23, 59)
             if (this.intersects(dMin, dMax, min, max)) {
                 ret.list.push({
                     key: i,
