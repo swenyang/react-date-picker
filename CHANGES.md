@@ -1,5 +1,12 @@
 # Change Logs
 
+## Version 1.1.3
+
+Date: 2016-10-11
+
+- Bug fixes
+- Unified callbacks with `this.date` as the first parameter
+
 ## Version 1.1.0
 
 Date: 2016-07-30

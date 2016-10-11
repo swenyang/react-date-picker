@@ -145,6 +145,8 @@ class DatePicker extends Component {
         onSelect: PropTypes.func,
         onDidSelect: PropTypes.func,
         onOpen: PropTypes.func,
+        onClose: PropTypes.func,
+        onConfirm: PropTypes.func,
         onCancel: PropTypes.func,
     }
 
@@ -163,6 +165,8 @@ class DatePicker extends Component {
         this.onSelect = this.onSelect.bind(this)
         this.onDidSelect = this.onDidSelect.bind(this)
         this.onOpen = this.onOpen.bind(this)
+        this.onClose = this.onClose.bind(this)
+        this.onConfirm = this.onConfirm.bind(this)
         this.onCancel = this.onCancel.bind(this)
 
         const minDate = this.parseDateString(props.min, props.type)
@@ -284,7 +288,19 @@ class DatePicker extends Component {
     onOpen() {
         this.mOnOpenDate = this.state.defaultDate
         if (this.props.onOpen) {
-            this.props.onOpen()
+            this.props.onOpen(this.date)
+        }
+    }
+
+    onClose() {
+        if (this.props.onClose) {
+            this.props.onClose(this.date)
+        }
+    }
+
+    onConfirm() {
+        if (this.props.onConfirm) {
+            this.props.onConfirm(this.date)
         }
     }
 
@@ -294,7 +310,7 @@ class DatePicker extends Component {
             this.mOnOpenDate = null
 
             if (this.props.onCancel) {
-                this.props.onCancel()
+                this.props.onCancel(this.date)
             }
         }
     }
@@ -600,14 +616,17 @@ class DatePicker extends Component {
 
         return (
             <UltraSelect
-                {...this.props} columns={this.state.columns} ref="select"
+                columns={this.state.columns} ref="select"
                 confirmButton={locale.confirmButton}
                 cancelButton={locale.cancelButton}
-                onSelect={this.onSelect}
-                onDidSelect={this.onDidSelect}
                 getStaticText={this.getStaticText}
                 getTitle={this.getTitle}
+                {...this.props}
+                onSelect={this.onSelect}
+                onDidSelect={this.onDidSelect}
                 onOpen={this.onOpen}
+                onClose={this.onClose}
+                onConfirm={this.onConfirm}
                 onCancel={this.onCancel}
             ></UltraSelect>
         )

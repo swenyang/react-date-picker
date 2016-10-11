@@ -173,6 +173,10 @@ class Example extends Component {
                     <DatePicker
                         ref="picker" type={this.state.type} min={this.state.min} use24hours={this.state.use24}
                         max={this.state.max} defaultDate={this.state.default} locale={this.state.locale}
+                        onOpen={date => console.log('onOpen:', date)}
+                        onClose={date => console.log('onClose:', date)}
+                        onConfirm={date => console.log('onConfirm:', date)}
+                        onCancel={date => console.log('onCancel:', date)}
                     ></DatePicker>
                 </div>
 

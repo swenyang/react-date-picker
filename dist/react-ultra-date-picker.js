@@ -250,6 +250,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.onSelect = _this.onSelect.bind(_this);
 	        _this.onDidSelect = _this.onDidSelect.bind(_this);
 	        _this.onOpen = _this.onOpen.bind(_this);
+	        _this.onClose = _this.onClose.bind(_this);
+	        _this.onConfirm = _this.onConfirm.bind(_this);
 	        _this.onCancel = _this.onCancel.bind(_this);
 
 	        var minDate = _this.parseDateString(props.min, props.type);
@@ -429,7 +431,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function onOpen() {
 	            this.mOnOpenDate = this.state.defaultDate;
 	            if (this.props.onOpen) {
-	                this.props.onOpen();
+	                this.props.onOpen(this.date);
+	            }
+	        }
+	    }, {
+	        key: 'onClose',
+	        value: function onClose() {
+	            if (this.props.onClose) {
+	                this.props.onClose(this.date);
+	            }
+	        }
+	    }, {
+	        key: 'onConfirm',
+	        value: function onConfirm() {
+	            if (this.props.onConfirm) {
+	                this.props.onConfirm(this.date);
 	            }
 	        }
 	    }, {
@@ -440,7 +456,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.mOnOpenDate = null;
 
 	                if (this.props.onCancel) {
-	                    this.props.onCancel();
+	                    this.props.onCancel(this.date);
 	                }
 	            }
 	        }
@@ -748,14 +764,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function render() {
 	            var locale = localeConfigs[this.props.locale];
 
-	            return _react2.default.createElement(_reactUltraSelect2.default, _extends({}, this.props, { columns: this.state.columns, ref: 'select',
+	            return _react2.default.createElement(_reactUltraSelect2.default, _extends({
+	                columns: this.state.columns, ref: 'select',
 	                confirmButton: locale.confirmButton,
 	                cancelButton: locale.cancelButton,
+	                getStaticText: this.getStaticText,
+	                getTitle: this.getTitle
+	            }, this.props, {
 	                onSelect: this.onSelect,
 	                onDidSelect: this.onDidSelect,
-	                getStaticText: this.getStaticText,
-	                getTitle: this.getTitle,
 	                onOpen: this.onOpen,
+	                onClose: this.onClose,
+	                onConfirm: this.onConfirm,
 	                onCancel: this.onCancel
 	            }));
 	        }
@@ -781,6 +801,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    onSelect: _react.PropTypes.func,
 	    onDidSelect: _react.PropTypes.func,
 	    onOpen: _react.PropTypes.func,
+	    onClose: _react.PropTypes.func,
+	    onConfirm: _react.PropTypes.func,
 	    onCancel: _react.PropTypes.func
 	};
 	DatePicker.defaultProps = {
