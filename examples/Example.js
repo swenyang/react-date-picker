@@ -21,7 +21,11 @@ const jaConfig = {
     minute: minute => padStartWith0(minute),
     confirmButton: '決定します',
     cancelButton: 'キャンセル',
-    dateLabel: (outOfRange, date, type, use24) => {
+    dateLabel: (fullDate, type, use24) => {
+        const { date, noneSelected, outOfRange } = fullDate
+        if (noneSelected) {
+            return '日付を選択してください'
+        }
         if (outOfRange) {
             return '日付を範囲で選択されていません'
         }
@@ -60,12 +64,10 @@ class Example extends Component {
             type: 'date',
             min: ('30 Sep 2016 03:10'),
             max: ('19 Sep 2017 13:14'),
-            // default: (new Date()).toDateString(),
+            // default: '2016-10-01',
             use24: false,
             locale: 'en',
         }
-
-        window.example = this
     }
 
     onSelectType(e) {
@@ -119,13 +121,13 @@ class Example extends Component {
         })
     }
 
-    getStaticText(selectedValues) {
-        return (<span>Select a month: {
-            selectedValues.map((e, i) =>
-                <div key={i}>
-                    {e.value}
-                </div>)
-        }</span>)
+    getStaticText(fullDate) {
+        const { date, noneSelected, outOfRange } = fullDate
+        return (
+            noneSelected || outOfRange ? 'Please select a month' : (
+                `${padStartWith0(date.getMonth() + 1)}-${date.getFullYear()}`
+            )
+        )
     }
 
     render() {
@@ -202,7 +204,11 @@ const jaConfig = {
     minute: minute => padStartWith0(minute),
     confirmButton: '決定します',
     cancelButton: 'キャンセル',
-    dateLabel: (outOfRange, date, type, use24) => {
+    dateLabel: (fullDate, type, use24) => {
+        const { date, noneSelected, outOfRange } = fullDate
+        if (noneSelected) {
+            return '日付を選択してください'
+        }
         if (outOfRange) {
             return '日付を範囲で選択されていません'
         }

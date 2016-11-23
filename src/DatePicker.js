@@ -31,7 +31,11 @@ const enConfig = {
     minute: minute => padStartWith0(minute),
     confirmButton: 'Confirm',
     cancelButton: 'Cancel',
-    dateLabel: (outOfRange, date, type, use24) => {
+    dateLabel: (fullDate, type, use24) => {
+        const { date, noneSelected, outOfRange } = fullDate
+        if (noneSelected) {
+            return 'Please select a date'
+        }
         if (outOfRange) {
             return 'Date out of range'
         }
@@ -61,7 +65,11 @@ const zhCNConfig = {
     minute: minute => padStartWith0(minute),
     confirmButton: '确定',
     cancelButton: '取消',
-    dateLabel: (outOfRange, date, type, use24) => {
+    dateLabel: (fullDate, type, use24) => {
+        const { date, noneSelected, outOfRange } = fullDate
+        if (noneSelected) {
+            return '请选择日期'
+        }
         if (outOfRange) {
             return '日期不在选择范围内'
         }
@@ -142,6 +150,10 @@ class DatePicker extends Component {
         use24hours: PropTypes.bool,
 
         title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+        outOfRangeLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+        noneSelectedLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+        getTitle: PropTypes.func,
+        getStaticText: PropTypes.func,
         onSelect: PropTypes.func,
         onDidSelect: PropTypes.func,
         onOpen: PropTypes.func,
@@ -172,14 +184,14 @@ class DatePicker extends Component {
         const minDate = this.parseDateString(props.min, props.type)
         const maxDate = this.parseDateString(props.max, props.type)
         const defaultDate = this.getDefaultDate(props)
-        this.state = this.calColumnsAndKeys(this.props, defaultDate, minDate, maxDate)
+        this.state = this.calColumnsAndKeys(this.props, defaultDate, minDate, maxDate, true)
     }
 
     componentWillReceiveProps(nextProps) {
         const minDate = this.parseDateString(nextProps.min, nextProps.type)
         const maxDate = this.parseDateString(nextProps.max, nextProps.type)
         const defaultDate = this.getDefaultDate(nextProps)
-        this.setState(this.calColumnsAndKeys(nextProps, defaultDate, minDate, maxDate))
+        this.setState(this.calColumnsAndKeys(nextProps, defaultDate, minDate, maxDate, true))
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -299,6 +311,9 @@ class DatePicker extends Component {
     }
 
     onConfirm() {
+        this.setState({
+            noneSelected: false,
+        })
         if (this.props.onConfirm) {
             this.props.onConfirm(this.date)
         }
@@ -316,13 +331,27 @@ class DatePicker extends Component {
     }
 
     getTitle() {
+        if (this.props.getTitle) {
+            return this.props.getTitle(this.fullDate)
+        }
         return this.props.title
     }
 
     getStaticText() {
+        const { getStaticText, outOfRangeLabel, noneSelectedLabel, type, use24hours } = this.props
+        const { outOfRange, noneSelected } = this.state
+        if (getStaticText) {
+            return getStaticText(this.fullDate)
+        }
+        if (noneSelected && noneSelectedLabel) {
+            return noneSelectedLabel
+        }
+        if (outOfRange && outOfRangeLabel) {
+            return outOfRangeLabel
+        }
         const locale = localeConfigs[this.props.locale]
         if (!locale) return null
-        return locale.dateLabel(this.state.outOfRange, this.state.defaultDate, this.props.type, this.props.use24hours)
+        return locale.dateLabel(this.fullDate, type, use24hours)
     }
 
     getDefaultDate(props) {
@@ -363,7 +392,7 @@ class DatePicker extends Component {
         return ret
     }
 
-    calColumnsAndKeys(p, d, minDate, maxDate) {
+    calColumnsAndKeys(p, d, minDate, maxDate, hasPropsChanged) {
         const props = p || this.props
         let defaultDate = d
         const { type, use24hours, locale } = props
@@ -456,6 +485,7 @@ class DatePicker extends Component {
             defaultDate,
             minDate,
             maxDate,
+            noneSelected: !(hasPropsChanged ? p.defaultDate : (!this.state.noneSelected || p.defaultDate)),
         }
     }
 
@@ -464,7 +494,15 @@ class DatePicker extends Component {
     }
 
     get date() {
-        return this.state.outOfRange ? Number.NaN : this.state.defaultDate
+        return (this.state.outOfRange || this.state.noneSelected) ? null : this.state.defaultDate
+    }
+
+    get fullDate() {
+        return {
+            date: this.date,
+            noneSelected: this.state.noneSelected,
+            outOfRange: this.state.outOfRange,
+        }
     }
 
     intersects(min1, max1, min2, max2) {
@@ -619,9 +657,9 @@ class DatePicker extends Component {
                 columns={this.state.columns} ref="select"
                 confirmButton={locale.confirmButton}
                 cancelButton={locale.cancelButton}
+                {...this.props}
                 getStaticText={this.getStaticText}
                 getTitle={this.getTitle}
-                {...this.props}
                 onSelect={this.onSelect}
                 onDidSelect={this.onDidSelect}
                 onOpen={this.onOpen}

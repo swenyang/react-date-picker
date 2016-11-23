@@ -1,5 +1,12 @@
 # Change Logs
 
+## Version 1.1.4
+
+Date: 2016-11-23
+
+- Support none-selected status
+- Optimize `getTitle`, `getStaticText` and `dateLabel` calling with `fullDate`
+
 ## Version 1.1.3
 
 Date: 2016-10-11

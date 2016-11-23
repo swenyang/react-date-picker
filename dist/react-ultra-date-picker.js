@@ -136,7 +136,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    confirmButton: 'Confirm',
 	    cancelButton: 'Cancel',
-	    dateLabel: function dateLabel(outOfRange, date, type, use24) {
+	    dateLabel: function dateLabel(fullDate, type, use24) {
+	        var date = fullDate.date;
+	        var noneSelected = fullDate.noneSelected;
+	        var outOfRange = fullDate.outOfRange;
+
+	        if (noneSelected) {
+	            return 'Please select a date';
+	        }
 	        if (outOfRange) {
 	            return 'Date out of range';
 	        }
@@ -174,7 +181,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    confirmButton: '确定',
 	    cancelButton: '取消',
-	    dateLabel: function dateLabel(outOfRange, date, type, use24) {
+	    dateLabel: function dateLabel(fullDate, type, use24) {
+	        var date = fullDate.date;
+	        var noneSelected = fullDate.noneSelected;
+	        var outOfRange = fullDate.outOfRange;
+
+	        if (noneSelected) {
+	            return '请选择日期';
+	        }
 	        if (outOfRange) {
 	            return '日期不在选择范围内';
 	        }
@@ -257,7 +271,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var minDate = _this.parseDateString(props.min, props.type);
 	        var maxDate = _this.parseDateString(props.max, props.type);
 	        var defaultDate = _this.getDefaultDate(props);
-	        _this.state = _this.calColumnsAndKeys(_this.props, defaultDate, minDate, maxDate);
+	        _this.state = _this.calColumnsAndKeys(_this.props, defaultDate, minDate, maxDate, true);
 	        return _this;
 	    }
 
@@ -267,7 +281,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var minDate = this.parseDateString(nextProps.min, nextProps.type);
 	            var maxDate = this.parseDateString(nextProps.max, nextProps.type);
 	            var defaultDate = this.getDefaultDate(nextProps);
-	            this.setState(this.calColumnsAndKeys(nextProps, defaultDate, minDate, maxDate));
+	            this.setState(this.calColumnsAndKeys(nextProps, defaultDate, minDate, maxDate, true));
 	        }
 	    }, {
 	        key: 'shouldComponentUpdate',
@@ -444,6 +458,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'onConfirm',
 	        value: function onConfirm() {
+	            this.setState({
+	                noneSelected: false
+	            });
 	            if (this.props.onConfirm) {
 	                this.props.onConfirm(this.date);
 	            }
@@ -463,14 +480,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'getTitle',
 	        value: function getTitle() {
+	            if (this.props.getTitle) {
+	                return this.props.getTitle(this.fullDate);
+	            }
 	            return this.props.title;
 	        }
 	    }, {
 	        key: 'getStaticText',
 	        value: function getStaticText() {
+	            var _props = this.props;
+	            var getStaticText = _props.getStaticText;
+	            var outOfRangeLabel = _props.outOfRangeLabel;
+	            var noneSelectedLabel = _props.noneSelectedLabel;
+	            var type = _props.type;
+	            var use24hours = _props.use24hours;
+	            var _state = this.state;
+	            var outOfRange = _state.outOfRange;
+	            var noneSelected = _state.noneSelected;
+
+	            if (getStaticText) {
+	                return getStaticText(this.fullDate);
+	            }
+	            if (noneSelected && noneSelectedLabel) {
+	                return noneSelectedLabel;
+	            }
+	            if (outOfRange && outOfRangeLabel) {
+	                return outOfRangeLabel;
+	            }
 	            var locale = localeConfigs[this.props.locale];
 	            if (!locale) return null;
-	            return locale.dateLabel(this.state.outOfRange, this.state.defaultDate, this.props.type, this.props.use24hours);
+	            return locale.dateLabel(this.fullDate, type, use24hours);
 	        }
 	    }, {
 	        key: 'getDefaultDate',
@@ -510,7 +549,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }, {
 	        key: 'calColumnsAndKeys',
-	        value: function calColumnsAndKeys(p, d, minDate, maxDate) {
+	        value: function calColumnsAndKeys(p, d, minDate, maxDate, hasPropsChanged) {
 	            var props = p || this.props;
 	            var defaultDate = d;
 	            var type = props.type;
@@ -603,7 +642,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                outOfRange: outOfRange,
 	                defaultDate: defaultDate,
 	                minDate: minDate,
-	                maxDate: maxDate
+	                maxDate: maxDate,
+	                noneSelected: !(hasPropsChanged ? p.defaultDate : !this.state.noneSelected || p.defaultDate)
 	            };
 	        }
 	    }, {
@@ -767,10 +807,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return _react2.default.createElement(_reactUltraSelect2.default, _extends({
 	                columns: this.state.columns, ref: 'select',
 	                confirmButton: locale.confirmButton,
-	                cancelButton: locale.cancelButton,
-	                getStaticText: this.getStaticText,
-	                getTitle: this.getTitle
+	                cancelButton: locale.cancelButton
 	            }, this.props, {
+	                getStaticText: this.getStaticText,
+	                getTitle: this.getTitle,
 	                onSelect: this.onSelect,
 	                onDidSelect: this.onDidSelect,
 	                onOpen: this.onOpen,
@@ -782,7 +822,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'date',
 	        get: function get() {
-	            return this.state.outOfRange ? Number.NaN : this.state.defaultDate;
+	            return this.state.outOfRange || this.state.noneSelected ? null : this.state.defaultDate;
+	        }
+	    }, {
+	        key: 'fullDate',
+	        get: function get() {
+	            return {
+	                date: this.date,
+	                noneSelected: this.state.noneSelected,
+	                outOfRange: this.state.outOfRange
+	            };
 	        }
 	    }]);
 
@@ -798,6 +847,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    use24hours: _react.PropTypes.bool,
 
 	    title: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.node]),
+	    outOfRangeLabel: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.node]),
+	    noneSelectedLabel: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.node]),
+	    getTitle: _react.PropTypes.func,
+	    getStaticText: _react.PropTypes.func,
 	    onSelect: _react.PropTypes.func,
 	    onDidSelect: _react.PropTypes.func,
 	    onOpen: _react.PropTypes.func,

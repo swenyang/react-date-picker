@@ -133,8 +133,20 @@ class SomeComponent extends Component {
         <tr>
             <td>`title`</td>
             <td>`null`</td>
-            <td>String</td>
+            <td>String/ReactNode</td>
             <td>Title for the selection panel.</td>
+        </tr>
+        <tr>
+            <td>`outOfRangeLabel`</td>
+            <td>`null`</td>
+            <td>String/ReactNode</td>
+            <td>Label indicating given `defaultDate` out of range. Use it if you don't want the default value in locale configuration.</td>
+        </tr>
+        <tr>
+            <td>`noneSelectedLabel`</td>
+            <td>`null`</td>
+            <td>String/ReactNode</td>
+            <td>Label indicating not given `defaultDate` prop and user haven't made a selection. Use it if you don't want the default value in locale configuration.</td>
         </tr>
     </tbody>
  </table>
@@ -156,19 +168,19 @@ Since this component relies on [React Ultra Select][1], you can pass these props
 React Ultra Date Picker shares same events/callbacks with React Ultra Select:
 
 
-- `onOpen()`
+- `onOpen(date)`
 
     Will be called when the selection panel shows up.
 
-- `onClose()`
+- `onClose(date)`
 
     Will be called when the selection panel hides.
 
-- `onConfirm()`
+- `onConfirm(date)`
 
     Will be called when the confirm button or backdrop is clicked.
 
-- `onCancel()`
+- `onCancel(date)`
 
     Will be called when the cancel button is clicked.
 
@@ -179,6 +191,16 @@ React Ultra Date Picker shares same events/callbacks with React Ultra Select:
 - `onSelect(date)`
 
     Will be called when scrolling and selected value is changed, useful for playing sound effects or so. `date` is the current selected date.
+
+- `getTitle(fullDate)`
+
+    Same as [React Ultra Select][1], but it will be called with a `fullDate` object, which contains selected date and out-of-range and none-selected status.
+
+    The priorities of `getTitle` prop is higher than `title` prop.
+
+- `getStaticText(fullDate)`
+
+    Same as [React Ultra Select][1], but it will be called with a `fullDate` object.
 
 # Functions
 
@@ -260,7 +282,7 @@ React Ultra Date Picker shares same events/callbacks with React Ultra Select:
                 <td>`dateLabel`</td>
                 <td>Function</td>
                 <td>A function accepts current selected date and generates display string.</td>
-                <td>`(outOfRange, date, type, use24) => date.toJSON()`</td>
+                <td>`(fullDate, type, use24) => date.toJSON()`</td>
             </tr>
         </tbody>
      </table>
@@ -281,23 +303,31 @@ React Ultra Date Picker shares same events/callbacks with React Ultra Select:
         minute: minute => padStartWith0(minute),
         confirmButton: '決定します',
         cancelButton: 'キャンセル',
-        dateLabel: (outOfRange, date, type, use24) => {
+        dateLabel: (fullDate, type, use24) => {
+            const { date, noneSelected, outOfRange } = fullDate
+            if (noneSelected) {
+                return '日付を選択してください'
+            }
             if (outOfRange) {
                 return '日付を範囲で選択されていません'
             }
-            switch (type) {
-                case 'time':
-                    return `${use24 ? '' : (date.getHours() < 12 ? jaConfig.am : jaConfig.pm)}${jaConfig.hour(date.getHours(), use24)}:${jaConfig.minute(date.getMinutes())}`
-                case 'month':
-                    return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}`
-                case 'datetime':
-                    return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}${jaConfig.date(date.getDate())} ${use24 ? '' : (date.getHours() < 12 ? jaConfig.am : jaConfig.pm)}${jaConfig.hour(date.getHours(), use24)}:${jaConfig.minute(date.getMinutes())}`
-                case 'date':
-                    return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}${jaConfig.date(date.getDate())}`
-                default:
-                    break
+            let ampmStr = ''
+            if (!use24) {
+                ampmStr = date.getHours() < 12 ? jaConfig.am : jaConfig.pm
             }
-        }
+            switch (type) {
+            case 'time':
+                return `${ampmStr}${jaConfig.hour(date.getHours(), use24)}:${jaConfig.minute(date.getMinutes())}`
+            case 'month':
+                return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}`
+            case 'datetime':
+                return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}${jaConfig.date(date.getDate())} ${ampmStr}${jaConfig.hour(date.getHours(), use24)}:${jaConfig.minute(date.getMinutes())}`
+            case 'date':
+                return `${jaConfig.year(date.getFullYear())}${jaConfig.month(date.getMonth())}${jaConfig.date(date.getDate())}`
+            default:
+                return ''
+            }
+        },
     }
     addLocaleConfig('ja', jaConfig)
 	```
@@ -322,8 +352,22 @@ React Ultra Date Picker shares same events/callbacks with React Ultra Select:
 
     Get the current selected date, a javascript `Date` Object will be returned. You can call `getFullYear()`, `getMonth()`, `getDate()`, `getHour()` or `getMinute()` depending on your needs. Remember to attach `ref` to `<DatePicker>`.
 
+    If given `defaultDate` is out of range, or user haven't select a date, `null` will be returned.
+
     ```js
     this.refs.datePicker.date
+    ```
+
+- `DatePicker.fullDate`
+
+    Get the current selected date and out-of-range, none-selected status. It will return an object like:
+
+    ```js
+    {
+        date: Date,
+        outOfRange: false,
+        noneSelected: true,
+    }
     ```
 
 # Examples
