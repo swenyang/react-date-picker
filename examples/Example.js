@@ -1,14 +1,10 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import reactPerf from 'react-addons-perf'
 
 import DatePicker, { addLocaleConfig, padStartWith0, translateHour } from '../src/DatePicker'
 // import DatePicker,{addLocaleConfig, padStartWith0, translateHour} from '../dist/react-ultra-date-picker'
 
 import './Example.less'
-
-/* global window */
-window.reactPerf = reactPerf
 
 const jaConfig = {
     order: ['year', 'month', 'date', 'ampm', 'hour', 'minute'],

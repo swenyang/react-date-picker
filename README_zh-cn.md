@@ -373,7 +373,7 @@ React Ultra Date Picker与React Ultra Select有相同的事件回调:
 	}
 	```
 
-## Examples
+## 样例
 
 - 在线
 
