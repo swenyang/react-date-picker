@@ -1,6 +1,6 @@
 {
   "name": "react-ultra-date-picker",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "An iOS like, comprehensive date picker component for React",
   "main": "dist/react-ultra-date-picker.js",
   "scripts": {
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.9.0",
+    "babel-eslint": "^7.2.3",
     "babel-loader": "^6.2.4",
     "babel-plugin-transform-class-properties": "^6.9.0",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
