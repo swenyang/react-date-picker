@@ -1,3 +1,5 @@
+**Migarted to [KeyUI DatePicker](https://palifeh5.github.io/key-ui/#/api/date-picker). This repo is not longer maintained.**
+
 # React Ultra Date Picker
 
 [Read Chinese documentation here 中文文档点此](https://github.com/swenyang/react-date-picker/blob/master/README_zh-cn.md)
