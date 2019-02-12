@@ -381,7 +381,8 @@ React Ultra Date Picker shares same events/callbacks with React Ultra Select:
 
 - Online
 
-	Open https://swenyang.github.io/react-date-picker to see online demo.
+  Open https://swenyang.github.io/react-date-picker to see online demo.
+
 
 - Local
 
