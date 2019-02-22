@@ -386,7 +386,7 @@ React Ultra Date Picker shares same events/callbacks with React Ultra Select:
 
 - Local
 
-	Clone this repo, and run `npm run examples`. Then navigate to \<http://localhost:8080\> to see examples.
+	Clone this repo, and run `npm run examples`. Then navigate to <http://localhost:8080> to see examples.
 
 ## TODO
 
